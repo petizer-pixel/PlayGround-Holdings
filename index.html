@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="apple-touch-icon" href="logo.jpg">
+<title>EZ7 — דשבורד פרויקטים</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #F4F3F0; --surface: #FFFFFF; --border: #E4E2DC; --border-strong: #C8C5BC;
+    --text-primary: #1A1916; --text-secondary: #6B6860; --text-muted: #A8A69F;
+    --green: #2D6A4F; --green-bg: #D8F3DC; --amber: #92400E; --amber-bg: #FEF3C7;
+    --red: #B91C1C; --red-bg: #FEE2E2;
+    --accent: #1A1916; --radius: 14px; --radius-sm: 8px; --radius-xs: 6px;
+  }
+  body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; }
+
+  /* HEADER */
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 17px; font-weight: 700; letter-spacing: -0.5px; }
+  .logo span { color: var(--text-muted); font-weight: 300; font-size: 13px; margin-right: 8px; }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .sync-status { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+  .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #22C55E; animation: pulse 2s infinite; }
+  .live-dot.offline { background: #EF4444; animation: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .user-select { padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 12px; font-family: 'Heebo', sans-serif; color: var(--text-primary); background: var(--bg); direction: rtl; outline: none; cursor: pointer; }
+  .btn { display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-primary); font-family: 'Heebo', sans-serif; transition: background 0.15s; }
+  .btn:hover { background: var(--bg); }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover { background: #333; }
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+  /* LAYOUT */
+  .container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+
+  /* STATS */
+  .summary-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.875rem 1rem; text-align: center; }
+  .stat-val { font-size: 26px; font-weight: 700; line-height: 1; }
+  .stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+
+  /* TABS */
+  .tabs-row { display: flex; gap: 4px; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+  .tab-btn { padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--text-secondary); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: 'Heebo', sans-serif; transition: color 0.15s, border-color 0.15s; margin-bottom: -1px; }
+  .tab-btn:hover { color: var(--text-primary); }
+  .tab-btn.active { color: var(--text-primary); border-bottom-color: var(--accent); }
+
+  /* PROJECT CARD */
+  .project-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 14px; overflow: hidden; }
+  .project-header { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; }
+  .project-header-main { flex: 1; }
+  .project-name { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+  .project-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .badge { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; white-space: nowrap; }
+  .badge-type { background: #F0EFE8; color: var(--text-secondary); border: 1px solid var(--border); }
+  .badge-active { background: var(--green-bg); color: var(--green); }
+  .badge-slow { background: var(--amber-bg); color: var(--amber); }
+  .badge-waiting { background: #FCE7F3; color: #9D174D; }
+  .progress-mini { display: flex; align-items: center; gap: 6px; }
+  .progress-track { width: 80px; height: 4px; background: var(--bg); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; }
+  .progress-pct { font-size: 12px; color: var(--text-muted); }
+  .project-actions { display: flex; gap: 6px; flex-shrink: 0; }
+
+  /* PROJECT INFO ROW */
+  .project-info { padding: 0 1.25rem 0.75rem; display: flex; flex-direction: column; gap: 4px; }
+  .info-row { font-size: 13px; color: var(--text-secondary); display: flex; gap: 6px; }
+  .info-row strong { color: var(--text-primary); font-weight: 500; }
+
+  /* CHECKPOINT */
+  .checkpoint-section { margin: 0 1.25rem 0.75rem; background: #FFFDF0; border: 1px solid #F0E89A; border-radius: var(--radius-sm); padding: 10px 12px; }
+  .checkpoint-label { font-size: 11px; font-weight: 600; color: #92660A; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+  .checkpoint-textarea { width: 100%; padding: 0; border: none; font-size: 13px; font-family: 'Heebo', sans-serif; color: var(--text-primary); background: transparent; direction: rtl; outline: none; resize: none; min-height: 50px; line-height: 1.6; }
+  .checkpoint-textarea::placeholder { color: #C4A84A; font-style: italic; }
+  .checkpoint-saved { font-size: 10px; color: #92660A; margin-top: 3px; height: 12px; }
+
+  /* DOMAIN SECTIONS */
+  .domains-container { border-top: 1px solid var(--border); }
+  .domain-section { border-bottom: 1px solid var(--border); }
+  .domain-section:last-child { border-bottom: none; }
+  .domain-header { display: flex; align-items: center; gap: 10px; padding: 10px 1.25rem; cursor: pointer; user-select: none; transition: background 0.1s; }
+  .domain-header:hover { background: #FAFAF8; }
+  .domain-icon { font-size: 14px; width: 22px; text-align: center; flex-shrink: 0; }
+  .domain-name { font-size: 13px; font-weight: 600; color: var(--text-primary); flex: 1; }
+  .domain-count { font-size: 11px; color: var(--text-muted); background: var(--bg); padding: 2px 7px; border-radius: 10px; border: 1px solid var(--border); }
+  .domain-toggle { font-size: 11px; color: var(--text-muted); transition: transform 0.2s; }
+  .domain-toggle.open { transform: rotate(180deg); }
+  .domain-body { display: none; padding: 0 1.25rem 10px; }
+  .domain-body.open { display: block; }
+
+  /* TASK TABLE */
+  .task-table { width: 100%; border-collapse: collapse; }
+  .task-table th { font-size: 10px; font-weight: 600; color: var(--text-muted); text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--border); background: #FAFAF8; text-transform: uppercase; letter-spacing: 0.04em; }
+  .task-table td { padding: 8px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 13px; color: var(--text-secondary); }
+  .task-table tr:last-child td { border-bottom: none; }
+  .task-table tr:hover td { background: #FAFAF8; }
+  .task-cb { width: 16px; height: 16px; border: 1.5px solid var(--border-strong); border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s; flex-shrink: 0; margin: 0 auto; }
+  .task-cb:hover { border-color: var(--green); }
+  .task-cb.done { background: var(--green); border-color: var(--green); }
+  .task-cb.done::after { content: '✓'; color: white; font-size: 10px; }
+  .task-name-cell { font-weight: 500; color: var(--text-primary); }
+  .task-desc-cell { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .task-due-badge { font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 500; white-space: nowrap; }
+  .due-ok { background: var(--green-bg); color: var(--green); }
+  .due-soon { background: var(--amber-bg); color: var(--amber); }
+  .due-overdue { background: var(--red-bg); color: var(--red); }
+  .owner-tag { font-size: 11px; color: var(--text-secondary); white-space: nowrap; }
+  .task-actions-cell { display: flex; gap: 3px; opacity: 0; transition: opacity 0.15s; }
+  tr:hover .task-actions-cell { opacity: 1; }
+  .task-act-btn { padding: 3px 5px; border: none; background: none; cursor: pointer; border-radius: 4px; font-size: 12px; }
+  .task-act-btn:hover { background: var(--border); }
+
+  /* ADD TASK ROW */
+  .add-task-row { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .add-input { padding: 6px 10px; border: 1px solid var(--border); border-radius: var(--radius-xs); font-size: 12px; font-family: 'Heebo', sans-serif; color: var(--text-primary); background: var(--bg); direction: rtl; outline: none; }
+  .add-input:focus { border-color: var(--accent); }
+  .add-input::placeholder { color: var(--text-muted); }
+  .add-input.task-name-inp { flex: 1; min-width: 120px; }
+  .add-input.owner-inp { width: 80px; }
+  .add-input.due-inp { width: 120px; direction: ltr; }
+  .add-input.type-sel { width: auto; cursor: pointer; }
+
+  /* MY TASKS VIEW */
+  .my-project-group { margin-bottom: 14px; }
+  .my-project-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; padding: 0 2px; }
+  .my-task-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .my-task-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .my-task-meta { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+  .my-task-empty { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 13px; }
+
+  /* DOMAIN TYPE BADGES */
+  .type-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
+  .type-לוגיסטיקה { background: #FEF3C7; color: #92400E; }
+  .type-שיווק { background: #FCE7F3; color: #9D174D; }
+  .type-הפקה { background: #D8F3DC; color: #2D6A4F; }
+  .type-תוכן { background: #EEF2FF; color: #3730A3; }
+  .type-תחרות { background: #FFF7ED; color: #C2410C; }
+
+  /* AI PANEL */
+  .ai-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem; margin-top: 1.5rem; }
+  .ai-panel-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; }
+  .ai-icon { width: 26px; height: 26px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .ai-title { font-size: 14px; font-weight: 600; }
+  .ai-subtitle { font-size: 12px; color: var(--text-secondary); }
+  .ai-input-row { display: flex; gap: 8px; }
+  .ai-input { flex: 1; padding: 9px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: 'Heebo', sans-serif; color: var(--text-primary); background: var(--bg); direction: rtl; outline: none; }
+  .ai-input:focus { border-color: var(--accent); }
+  .ai-response { margin-top: 12px; padding: 12px; background: var(--bg); border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; display: none; white-space: pre-wrap; direction: rtl; }
+  .ai-response.visible { display: block; }
+  .loading-dots span { animation: blink 1.2s infinite; font-size: 18px; color: var(--text-muted); }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes blink { 0%,80%,100%{opacity:0.2} 40%{opacity:1} }
+
+  /* MODALS */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: var(--radius); padding: 1.5rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; direction: rtl; }
+  .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 1rem; }
+  .field-group { margin-bottom: 1rem; }
+  .field-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 4px; display: block; }
+  .field-input, .field-select, .field-textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: 'Heebo', sans-serif; color: var(--text-primary); background: var(--bg); direction: rtl; outline: none; }
+  .field-input:focus, .field-select:focus, .field-textarea:focus { border-color: var(--accent); }
+  .field-textarea { resize: vertical; min-height: 60px; }
+  .progress-input { width: 100%; accent-color: var(--accent); }
+  .modal-footer { display: flex; gap: 8px; margin-top: 1.25rem; flex-wrap: wrap; }
+
+  /* ARCHIVE */
+  .archive-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); direction: rtl; }
+  .archive-item:last-child { border-bottom: none; }
+  .archive-item-name { font-size: 13px; color: var(--text-secondary); text-decoration: line-through; }
+  .archive-item-meta { font-size: 11px; color: var(--text-muted); margin-top: 3px; display: flex; gap: 8px; }
+  .archive-empty { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 13px; }
+
+  /* MISC */
+  .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .filter-label { font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+  .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-pill { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: 'Heebo', sans-serif; transition: background 0.15s, color 0.15s, border-color 0.15s; }
+  .filter-pill:hover { border-color: var(--border-strong); color: var(--text-primary); }
+  .filter-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+
+  /* ===== SPONSORS ===== */
+  .sp-toolbar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .sp-filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sp-pill { padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); cursor: pointer; font-family: 'Heebo', sans-serif; transition: all 0.15s; }
+  .sp-pill:hover { border-color: var(--border-strong); }
+  .sp-pill.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .sp-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 1.25rem; }
+  .sp-stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 0.875rem 1rem; text-align: center; }
+  .sp-stat-val { font-size: 22px; font-weight: 700; line-height: 1; }
+  .sp-stat-lbl { font-size: 11px; color: var(--text-secondary); margin-top: 3px; }
+  .sp-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; transition: border-color 0.15s; }
+  .sp-card:hover { border-color: var(--border-strong); }
+  .sp-card-header { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .sp-card-main { flex: 1; }
+  .sp-name { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .sp-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; flex-wrap: wrap; }
+  .sp-amount { font-size: 13px; font-weight: 600; color: #2D6A4F; }
+  .sp-date { font-size: 12px; color: var(--text-muted); }
+  .sp-status-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+  .sp-s-contact { background: #EEF2FF; color: #3730A3; }
+  .sp-s-sent { background: #FEF3C7; color: #92400E; }
+  .sp-s-closed { background: #D8F3DC; color: #2D6A4F; }
+  .sp-s-lost { background: #FEE2E2; color: #B91C1C; }
+  .sp-card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .sp-body { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+  .sp-body.open { display: block; }
+  .sp-body-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .sp-assets-section { margin-top: 12px; }
+  .sp-assets-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .sp-assets-grid { display: flex; gap: 6px; flex-wrap: wrap; }
+  .sp-asset-chip { display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; border: 1.5px solid var(--border); background: var(--surface); cursor: pointer; font-family: 'Heebo', sans-serif; transition: all 0.15s; color: var(--text-secondary); }
+  .sp-asset-chip.selected { background: #012f69; color: white; border-color: #012f69; }
+  .sp-asset-chip:hover { border-color: #012f69; }
+  .sp-notes { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: 'Heebo', sans-serif; direction: rtl; outline: none; resize: vertical; min-height: 60px; color: var(--text-primary); background: var(--bg); margin-top: 8px; }
+  .sp-notes:focus { border-color: var(--accent); }
+  .sp-summary-box { margin-top: 12px; padding: 10px 12px; background: #F0F4FF; border: 1px solid #C7D2FE; border-radius: var(--radius-sm); font-size: 13px; color: #3730A3; line-height: 1.5; direction: rtl; }
+  .sp-summary-label { font-size: 10px; font-weight: 700; color: #3730A3; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .sp-gen-btn { padding: 5px 12px; border: 1px solid #3730A3; border-radius: var(--radius-sm); background: white; color: #3730A3; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Heebo', sans-serif; margin-top: 8px; }
+  .sp-gen-btn:hover { background: #3730A3; color: white; }
+  .sp-field-group { display: flex; flex-direction: column; gap: 4px; }
+  .sp-field-label { font-size: 11px; font-weight: 500; color: var(--text-secondary); }
+  .sp-field-input, .sp-field-select { padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; font-family: 'Heebo', sans-serif; color: var(--text-primary); background: var(--bg); direction: rtl; outline: none; width: 100%; }
+  .sp-field-input:focus, .sp-field-select:focus { border-color: var(--accent); }
+  .sp-empty { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 13px; }
+
+  /* ===== CALENDAR ===== */
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
+  .cal-title { font-size: 22px; font-weight: 700; color: #012f69; }
+  .cal-season { font-size: 14px; color: #caa04c; font-weight: 600; }
+  .cal-view-btns { display: flex; gap: 6px; }
+  .cal-view-btn { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; border: 1.5px solid #012f69; background: white; color: #012f69; cursor: pointer; font-family: 'Heebo', sans-serif; transition: background 0.15s; }
+  .cal-view-btn.active { background: #012f69; color: white; }
+  .cal-nav { display: flex; align-items: center; gap: 10px; }
+  .cal-nav-btn { width: 32px; height: 32px; border: 1px solid var(--border); border-radius: 50%; background: white; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; color: #012f69; }
+  .cal-nav-btn:hover { background: #012f69; color: white; }
+
+  /* OVERVIEW - all months grid */
+  .cal-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; direction: rtl; }
+  .cal-month-mini { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+  .cal-month-mini-title { font-size: 15px; font-weight: 700; color: #012f69; text-align: center; margin-bottom: 8px; }
+  .cal-mini-grid { width: 100%; border-collapse: collapse; direction: rtl; }
+  .cal-mini-grid th { font-size: 10px; color: #012f69; font-weight: 600; text-align: center; padding: 3px 0; }
+  .cal-mini-grid td { text-align: center; padding: 3px 2px; font-size: 12px; cursor: pointer; border-radius: 4px; color: #1a1916; }
+  .cal-mini-grid td:hover { background: #e8edf5; }
+  .cal-mini-day-holiday { color: #c0392b !important; font-weight: 600; }
+  .cal-mini-day-weekend { color: #c0392b; }
+  .cal-mini-day-has-event { position: relative; font-weight: 600; color: #012f69; }
+  .cal-mini-day-has-event::after { content: ''; position: absolute; bottom: 1px; left: 50%; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 50%; background: #caa04c; }
+  .cal-mini-day-today { background: #012f69 !important; color: white !important; border-radius: 50%; font-weight: 700; }
+
+  /* MONTH VIEW */
+  .cal-month-view { direction: rtl; }
+  .cal-month-big-title { font-size: 36px; font-weight: 800; color: #012f69; margin-bottom: 4px; }
+  .cal-month-underline { width: 60px; height: 3px; background: #caa04c; border-radius: 2px; margin-bottom: 1rem; }
+  .cal-grid-header { display: grid; grid-template-columns: repeat(7,1fr); margin-bottom: 4px; }
+  .cal-grid-header span { text-align: center; font-size: 12px; font-weight: 700; color: #012f69; padding: 6px 0; border-bottom: 2px solid #012f69; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cal-day { background: #eef1f8; border-radius: 10px; min-height: 90px; padding: 6px 8px; cursor: pointer; transition: border-color 0.15s; border: 1.5px solid transparent; position: relative; }
+  .cal-day:hover { border-color: #012f69; }
+  .cal-day.other-month { opacity: 0.35; }
+  .cal-day.today { background: white; border-color: #012f69; }
+  .cal-day.has-holiday { background: #fdecea; border-color: #e74c3c; }
+  .cal-day-num { font-size: 15px; font-weight: 700; color: #012f69; text-align: left; }
+  .cal-day.has-holiday .cal-day-num { color: #c0392b; }
+  .cal-day-weekend .cal-day-num { color: #c0392b; }
+  .cal-day-events { margin-top: 4px; display: flex; flex-direction: column; gap: 2px; }
+  .cal-event-pill { font-size: 10px; padding: 1px 5px; border-radius: 4px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cal-event-game { background: #012f69; color: white; }
+  .cal-event-task { background: #caa04c; color: white; }
+  .cal-event-event { background: #e8f4e8; color: #2D6A4F; border: 1px solid #b7ebc0; }
+  .cal-event-holiday { font-size: 10px; color: #c0392b; font-weight: 600; }
+  .cal-day-holiday-name { font-size: 10px; color: #c0392b; font-weight: 600; margin-top: 2px; }
+
+  /* Event modal */
+  .cal-event-form { display: flex; flex-direction: column; gap: 10px; }
+  .cal-event-type-row { display: flex; gap: 8px; }
+  .cal-type-btn { flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 12px; font-weight: 600; font-family: 'Heebo', sans-serif; transition: all 0.15s; }
+  .cal-type-btn.sel-game { background: #012f69; color: white; border-color: #012f69; }
+  .cal-type-btn.sel-event { background: #2D6A4F; color: white; border-color: #2D6A4F; }
+  .cal-type-btn.sel-task { background: #caa04c; color: white; border-color: #caa04c; }
+  .events-list { margin-top: 8px; }
+  .event-list-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .event-list-item:last-child { border-bottom: none; }
+  .event-del-btn { margin-right: auto; cursor: pointer; color: #c0392b; font-size: 14px; padding: 2px 6px; border-radius: 4px; border: none; background: none; }
+  .event-del-btn:hover { background: #fdecea; }
+
+  /* DRAG & DROP */
+  .task-row-draggable { cursor: grab; }
+  .task-done-row td { background: #FAFAF8; }
+  .task-name-done { text-decoration: line-through; color: var(--text-muted) !important; font-weight: 400 !important; }
+  .task-row-draggable:active { cursor: grabbing; }
+  .task-row-dragging { opacity: 0.4; }
+  .domain-body.drag-over { background: #EEF2FF; border-radius: var(--radius-sm); outline: 2px dashed #3730A3; }
+  .drag-handle { color: var(--text-muted); font-size: 14px; cursor: grab; padding: 0 4px; user-select: none; }
+  .drag-handle:hover { color: var(--text-primary); }
+
+  /* HOUSE VIEW */
+  .house-view { direction: rtl; }
+  .house-selector { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .house-selector label { font-size: 13px; color: var(--text-secondary); }
+  .house-selector select { padding: 7px 12px; border: 1.5px solid #012f69; border-radius: var(--radius-sm); font-size: 13px; font-family: 'Heebo', sans-serif; color: #012f69; font-weight: 600; outline: none; background: white; cursor: pointer; }
+  .house-schedule { background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .house-schedule-header { background: #012f69; color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .house-schedule-title { font-size: 17px; font-weight: 700; }
+  .house-schedule-sub { font-size: 12px; opacity: 0.75; }
+  .house-game-row { display: flex; align-items: center; gap: 16px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+  .house-game-row:last-child { border-bottom: none; }
+  .house-game-row:hover { background: #f8f9fd; }
+  .house-game-date { min-width: 90px; font-size: 13px; font-weight: 600; color: #012f69; }
+  .house-game-day { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .house-game-info { flex: 1; }
+  .house-game-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .house-game-venue { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .house-game-venue::before { content: "📍 "; }
+  .house-empty { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 13px; }
+  .house-export-btn { padding: 6px 14px; border: 1.5px solid #012f69; border-radius: 20px; background: white; color: #012f69; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Heebo', sans-serif; }
+  .house-export-btn:hover { background: #012f69; color: white; }
+
+  @media (max-width: 600px) {
+    .cal-overview { grid-template-columns: 1fr; }
+    .cal-day { min-height: 60px; padding: 4px; }
+    .cal-month-big-title { font-size: 24px; }
+    .cal-day-num { font-size: 13px; }
+    .cal-event-pill { display: none; }
+  }
+
+  .last-updated { font-size: 11px; color: var(--text-muted); text-align: left; margin-top: 1rem; }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 10px 20px; border-radius: var(--radius-sm); font-size: 13px; opacity: 0; transition: opacity 0.3s; z-index: 300; pointer-events: none; white-space: nowrap; }
+  .toast.show { opacity: 1; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* DRAG & DROP */
+  .task-row-draggable { cursor: grab; }
+  .task-done-row td { background: #FAFAF8; }
+  .task-name-done { text-decoration: line-through; color: var(--text-muted) !important; font-weight: 400 !important; }
+  .task-row-draggable:active { cursor: grabbing; }
+  .task-row-dragging { opacity: 0.4; }
+  .domain-body.drag-over { background: #EEF2FF; border-radius: var(--radius-sm); outline: 2px dashed #3730A3; }
+  .drag-handle { color: var(--text-muted); font-size: 14px; cursor: grab; padding: 0 4px; user-select: none; }
+  .drag-handle:hover { color: var(--text-primary); }
+
+  /* HOUSE VIEW */
+  .house-view { direction: rtl; }
+  .house-selector { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .house-selector label { font-size: 13px; color: var(--text-secondary); }
+  .house-selector select { padding: 7px 12px; border: 1.5px solid #012f69; border-radius: var(--radius-sm); font-size: 13px; font-family: 'Heebo', sans-serif; color: #012f69; font-weight: 600; outline: none; background: white; cursor: pointer; }
+  .house-schedule { background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .house-schedule-header { background: #012f69; color: white; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .house-schedule-title { font-size: 17px; font-weight: 700; }
+  .house-schedule-sub { font-size: 12px; opacity: 0.75; }
+  .house-game-row { display: flex; align-items: center; gap: 16px; padding: 12px 20px; border-bottom: 1px solid var(--border); }
+  .house-game-row:last-child { border-bottom: none; }
+  .house-game-row:hover { background: #f8f9fd; }
+  .house-game-date { min-width: 90px; font-size: 13px; font-weight: 600; color: #012f69; }
+  .house-game-day { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+  .house-game-info { flex: 1; }
+  .house-game-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+  .house-game-venue { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .house-game-venue::before { content: "📍 "; }
+  .house-empty { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 13px; }
+  .house-export-btn { padding: 6px 14px; border: 1.5px solid #012f69; border-radius: 20px; background: white; color: #012f69; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Heebo', sans-serif; }
+  .house-export-btn:hover { background: #012f69; color: white; }
+
+  @media (max-width: 600px) {
+    header { padding: 0.75rem 1rem; }
+    .container { padding: 1rem; }
+    .stat-val { font-size: 22px; }
+    .task-table th.hide-m, .task-table td.hide-m { display: none; }
+    .task-actions-cell { opacity: 1; }
+    .add-input.owner-inp, .add-input.due-inp { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">EZ7 <span>דשבורד</span></div>
+  <div class="header-right">
+    <select class="user-select" id="user-select" onchange="onUserChange()">
+      <option value="">מי אתה?</option>
+    </select>
+    <div class="sync-status">
+      <span class="live-dot" id="sync-dot"></span>
+      <span id="sync-label">מתחבר...</span>
+    </div>
+    <button class="btn btn-sm" onclick="openArchive()">📦</button>
+    <button class="btn btn-primary btn-sm" onclick="openAddProject()">+ פרויקט</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="summary-bar">
+    <div class="stat"><div class="stat-val" id="stat-projects">—</div><div class="stat-label">פרויקטים</div></div>
+    <div class="stat"><div class="stat-val" id="stat-avg">—</div><div class="stat-label">התקדמות ממוצעת</div></div>
+    <div class="stat"><div class="stat-val" id="stat-tasks">—</div><div class="stat-label">משימות פתוחות</div></div>
+  </div>
+
+  <div class="tabs-row">
+    <button class="tab-btn active" id="tab-all" onclick="switchTab('all')">כל הפרויקטים</button>
+    <button class="tab-btn" id="tab-mine" onclick="switchTab('mine')">המשימות שלי</button>
+    <button class="tab-btn" id="tab-cal" onclick="switchTab('cal')">📅 לוח שנה</button>
+    <button class="tab-btn" id="tab-sponsors" onclick="switchTab('sponsors')">🤝 חסויות</button>
+    <button class="tab-btn" id="tab-league" onclick="switchTab('league')">🧮 מחשבון ליגה</button>
+  </div>
+
+  <div id="all-view">
+    <div class="filter-bar">
+      <span class="filter-label">סנן לפי תחום:</span>
+      <div class="filter-pills" id="filter-pills">
+        <button class="filter-pill active" onclick="setFilter('')">הכל</button>
+        <button class="filter-pill" onclick="setFilter('לוגיסטיקה')">📦 לוגיסטיקה</button>
+        <button class="filter-pill" onclick="setFilter('שיווק')">📣 שיווק</button>
+        <button class="filter-pill" onclick="setFilter('הפקה')">🔧 הפקה</button>
+        <button class="filter-pill" onclick="setFilter('תוכן')">🎬 תוכן</button>
+        <button class="filter-pill" onclick="setFilter('תחרות')">🏆 תחרות</button>
+        <button class="filter-pill" onclick="setFilter('כללי')">📋 כללי</button>
+      </div>
+      <div id="cal-house-row" style="display:flex;gap:8px;align-items:center;margin-top:2px">
+        <label style="font-size:12px;color:var(--text-muted);white-space:nowrap">בית מספר</label>
+        <input class="field-input" id="cal-event-house" type="number" min="1" max="30" placeholder="1–30" style="width:80px" />
+        <span style="font-size:12px;color:var(--text-muted)">קטגוריה</span>
+        <select class="field-input" id="cal-event-category" style="flex:1">
+          <option value="">— בחר —</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+        </select>
+      </div>
+    </div>
+    <div id="projects-container"><div style="text-align:center;padding:2rem;color:var(--text-muted)">טוען...</div></div>
+  </div>
+
+  <div id="mine-view" style="display:none">
+    <div id="my-tasks-container"></div>
+  </div>
+
+  <div id="league-view" style="display:none">
+    <iframe src="league-calculator.html" id="league-iframe"
+      style="width:100%;height:calc(100vh - 120px);border:none;border-radius:var(--radius);background:white;"
+      title="מחשבון ליגה">
+    </iframe>
+  </div>
+
+  <div id="sponsors-view" style="display:none">
+    <div id="sponsors-container"></div>
+  </div>
+
+  <div id="cal-view" style="display:none">
+    <div id="calendar-container"></div>
+  </div>
+
+  <div class="ai-panel">
+    <div class="ai-panel-header">
+      <div class="ai-icon">AI</div>
+      <div><div class="ai-title">עוזר AI</div><div class="ai-subtitle">שאל שאלה על הפרויקטים</div></div>
+    </div>
+    <div class="ai-input-row">
+      <input class="ai-input" id="ai-input" placeholder="למשל: מה המשימות הדחופות ביותר?" onkeydown="if(event.key==='Enter') askAI()" />
+      <button class="btn btn-primary" onclick="askAI()">שאל</button>
+    </div>
+    <div class="ai-response" id="ai-response"></div>
+  </div>
+  <div class="last-updated" id="last-updated"></div>
+</div>
+
+<!-- Project Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <h3 id="modal-title">עריכת פרויקט</h3>
+    <div class="field-group"><label class="field-label">שם פרויקט</label><input class="field-input" id="edit-name" /></div>
+    <div class="field-group"><label class="field-label">סוג</label>
+      <select class="field-select" id="edit-type"><option>עסקי</option><option>נדל"ן</option><option>אישי</option><option>טכנולוגי</option></select>
+    </div>
+    <div class="field-group"><label class="field-label">סטטוס</label>
+      <select class="field-select" id="edit-status"><option value="active">פעיל</option><option value="slow">מתקדם לאט</option><option value="waiting">ממתין</option></select>
+    </div>
+    <div class="field-group"><label class="field-label">סטטוס נוכחי</label><textarea class="field-textarea" id="edit-current-status"></textarea></div>
+    <div class="field-group"><label class="field-label">הצעד הבא</label><input class="field-input" id="edit-next-step" /></div>
+    <div class="field-group">
+      <label class="field-label">התקדמות: <span id="edit-pct-label">0%</span></label>
+      <input type="range" class="progress-input" id="edit-pct" min="0" max="100" step="5" oninput="document.getElementById('edit-pct-label').textContent=this.value+'%'" />
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveEdit()">שמור</button>
+      <button class="btn" onclick="closeModal()">ביטול</button>
+      <button class="btn" style="margin-right:auto;color:#B91C1C;border-color:#FECACA" onclick="deleteProject()">מחק</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="modal-overlay" id="task-modal" onclick="closeTaskModal(event)">
+  <div class="modal">
+    <h3 id="task-modal-title">עריכת משימה</h3>
+    <div class="field-group"><label class="field-label">שם משימה</label><input class="field-input" id="task-edit-text" /></div>
+    <div class="field-group"><label class="field-label">תיאור</label><textarea class="field-textarea" id="task-edit-desc" placeholder="פרטים נוספים..."></textarea></div>
+    <div class="field-group"><label class="field-label">אחראי</label><input class="field-input" id="task-edit-owner" placeholder="שם האחראי..." /></div>
+    <div class="field-group"><label class="field-label">תחום</label>
+      <select class="field-select" id="task-edit-type">
+        <option value="">— ללא תחום —</option>
+        <option value="לוגיסטיקה">לוגיסטיקה</option>
+        <option value="שיווק">שיווק</option>
+        <option value="הפקה">הפקה</option>
+        <option value="תוכן">תוכן</option>
+        <option value="תחרות">תחרות</option>
+        <option value="כללי">כללי</option>
+      </select>
+    </div>
+    <div class="field-group"><label class="field-label">תאריך הוספה</label><input class="field-input" id="task-edit-date" type="date" /></div>
+    <div class="field-group"><label class="field-label">תאריך יעד</label><input class="field-input" id="task-edit-due" type="date" /></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveTaskEdit()">שמור</button>
+      <button class="btn" onclick="closeTaskModal()">ביטול</button>
+      <button class="btn" style="margin-right:auto;color:#B91C1C;border-color:#FECACA" onclick="deleteTaskFromModal()">מחק</button>
+    </div>
+  </div>
+</div>
+
+<!-- Archive Modal -->
+<div class="modal-overlay" id="archive-modal" onclick="closeArchiveModal(event)">
+  <div class="modal" style="max-width:580px">
+    <h3>📦 ארכיון משימות</h3>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:1rem">משימות שהושלמו</p>
+    <div id="archive-list"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeArchiveModal()">סגור</button>
+      <button class="btn" style="margin-right:auto;color:#B91C1C;border-color:#FECACA" onclick="clearArchive()">נקה ארכיון</button>
+    </div>
+  </div>
+</div>
+
+<!-- Calendar Event Modal -->
+<div class="modal-overlay" id="cal-modal" onclick="closeCalModal(event)">
+  <div class="modal" style="max-width:420px">
+    <h3 id="cal-modal-title">אירועים</h3>
+    <div class="events-list" id="cal-events-list"></div>
+    <hr style="margin:12px 0;border:none;border-top:1px solid var(--border)">
+    <div class="cal-event-form">
+      <div class="cal-event-type-row">
+        <button class="cal-type-btn" id="ctype-game" onclick="selectCalType('game')">⚽ משחק</button>
+        <button class="cal-type-btn" id="ctype-event" onclick="selectCalType('event')">📌 אירוע</button>
+        <button class="cal-type-btn" id="ctype-task" onclick="selectCalType('task')">✅ משימה</button>
+      </div>
+      <input class="field-input" id="cal-event-text" placeholder="תיאור (שם קבוצות, פרטים...)" />
+      <div id="cal-venue-row">
+        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:4px">מתחם</label>
+        <select class="field-input" id="cal-event-venue" onchange="onVenueChange()" style="margin-bottom:6px">
+          <option value="">— בחר מתחם —</option>
+        <option value="ירושלים – מרכז לרנר (טופ פאדל)">ירושלים – מרכז לרנר (טופ פאדל)</option>
+        <option value="מודיעין - מכבים קלאב (מכבים קלאב)">מודיעין - מכבים קלאב (מכבים קלאב)</option>
+        <option value="אשדוד (פאדליה)">אשדוד (פאדליה)</option>
+        <option value="ירושלים (מועדון הפאדל)">ירושלים (מועדון הפאדל)</option>
+        <option value="אילת (האקדמיה לפאדל)">אילת (האקדמיה לפאדל)</option>
+        <option value="באר שבע (פאדל קלאב)">באר שבע (פאדל קלאב)</option>
+        <option value="נשר (פאדלנט)">נשר (פאדלנט)</option>
+        <option value="נהריה (SeeClub)">נהריה (SeeClub)</option>
+        <option value="קיסריה (פאדל ישראל)">קיסריה (פאדל ישראל)</option>
+        <option value="טבריה (פאדל טיים)">טבריה (פאדל טיים)</option>
+        <option value="גינוסר (פאדל קלאב)">גינוסר (פאדל קלאב)</option>
+        <option value="ראשון לציון (פאדל סנטר)">ראשון לציון (פאדל סנטר)</option>
+        <option value="חולון – פאדל טיים (פאדל טיים)">חולון – פאדל טיים (פאדל טיים)</option>
+        <option value="ראשון לציון (פאדל ישראל)">ראשון לציון (פאדל ישראל)</option>
+        <option value="רחובות – פאדל טיים (פאדל טיים)">רחובות – פאדל טיים (פאדל טיים)</option>
+        <option value="יבנה – פאדל טיים (פאדל טיים)">יבנה – פאדל טיים (פאדל טיים)</option>
+        <option value="רעננה (פאדל טיים)">רעננה (פאדל טיים)</option>
+        <option value="רמת השרון (מרכז הטניס)">רמת השרון (מרכז הטניס)</option>
+        <option value="הרצליה (סטיל טניס)">הרצליה (סטיל טניס)</option>
+        <option value="הרצליה (טופ פאדל)">הרצליה (טופ פאדל)</option>
+        <option value="נתניה פולג (טופ פאדל)">נתניה פולג (טופ פאדל)</option>
+        <option value="פתח תקווה (פאדל ישראל)">פתח תקווה (פאדל ישראל)</option>
+        <option value="כפר סבא (פאדל ישראל)">כפר סבא (פאדל ישראל)</option>
+        <option value="רמת גן – כפר המכביה (פאדל ישראל)">רמת גן – כפר המכביה (פאדל ישראל)</option>
+        <option value="תל אביב (TERO)">תל אביב (TERO)</option>
+        <option value="סביון (איי פאדל)">סביון (איי פאדל)</option>
+        <option value="רמת גן הפארק הלאומי (פאדליר)">רמת גן הפארק הלאומי (פאדליר)</option>
+        <option value="סביון (טופ פאדל)">סביון (טופ פאדל)</option>
+        <option value="תל אביב - קאנטרי דקל (פאדל טיים)">תל אביב - קאנטרי דקל (פאדל טיים)</option>
+          <option value="__other__">אחר (הקלד ידנית)</option>
+        </select>
+        <input class="field-input" id="cal-event-location" placeholder="מיקום ידני..." style="display:none" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="addCalEvent()">הוסף</button>
+        <button class="btn" onclick="closeCalModal()">סגור</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sponsor Modal -->
+<div class="modal-overlay" id="sponsor-modal" onclick="closeSponsorModal(event)">
+  <div class="modal" style="max-width:520px">
+    <h3 id="sponsor-modal-title">ספונסר חדש</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="field-group"><label class="field-label">שם החברה</label><input class="field-input" id="sp-edit-name" placeholder="שם החברה..." /></div>
+      <div class="field-group"><label class="field-label">סכום (₪)</label><input class="field-input" id="sp-edit-amount" type="number" placeholder="0" /></div>
+      <div class="field-group"><label class="field-label">סטטוס</label>
+        <select class="field-select" id="sp-edit-status">
+          <option value="contact">בקשר</option>
+          <option value="sent">הצעה נשלחה</option>
+          <option value="closed">סגור ✓</option>
+          <option value="lost">לא התקדם</option>
+        </select>
+      </div>
+      <div class="field-group"><label class="field-label">תאריך שליחת הצעה</label><input class="field-input" id="sp-edit-date" type="date" /></div>
+    </div>
+    <div class="field-group" style="margin-bottom:12px"><label class="field-label">הערות</label><textarea class="field-textarea" id="sp-edit-notes" placeholder="הערות חופשיות..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveSponsorModal()">שמור</button>
+      <button class="btn" onclick="closeSponsorModal()">ביטול</button>
+      <button class="btn" style="margin-right:auto;color:#B91C1C;border-color:#FECACA" id="sp-del-btn" onclick="deleteSponsorFromModal()">מחק</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://lmpfvtbsisvwvsuumkja.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcGZ2dGJzaXN2d3ZzdXVta2phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MjQ3NDIsImV4cCI6MjA5NzAwMDc0Mn0.MkrkrlL9_HRTBJMf3e2HXuHbEUOrMjH0Id3xoq5uWxM';
+const HEADERS = { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY };
+
+const DOMAINS = [
+  { key: 'לוגיסטיקה', icon: '📦' },
+  { key: 'שיווק',     icon: '📣' },
+  { key: 'הפקה',      icon: '🔧' },
+  { key: 'תוכן',      icon: '🎬' },
+  { key: 'תחרות',     icon: '🏆' },
+  { key: 'כללי',      icon: '📋' },
+];
+
+const today = new Date().toISOString().split('T')[0];
+
+const DEFAULT_PROJECTS = [
+  { id: 1, name: 'EZ7 / ליגת פאדל', type: 'עסקי', status: 'active', currentStatus: 'בניית מסמכי יסוד ושיחות עם שותפים', nextStep: 'מעקב והצעה מורן ויזל', pct: 35, checkpoint: '',
+    tasks: [
+      {text:'מעקב והצעה מורן ויזל',done:false,owner:'',desc:'',type:'שיווק',date:today,due:''},
+      {text:'ערן — חיבור ראשון לציון',done:false,owner:'',desc:'',type:'לוגיסטיקה',date:today,due:''},
+      {text:'פתיחת חברה וחשבון בנק',done:false,owner:'',desc:'',type:'לוגיסטיקה',date:today,due:''},
+      {text:'כתיבת קונספט 2-3 טורנירים יומיים ערן',done:false,owner:'',desc:'',type:'תחרות',date:today,due:''},
+      {text:'סיום וידיאו ערן — עדן וענבר',done:false,owner:'',desc:'',type:'תוכן',date:today,due:''}
+    ]
+  },
+  { id: 2, name: 'חכירת מגרש — מתקן פאדל', type: 'עסקי', status: 'slow', currentStatus: 'ממתין להזמנת מגרש + במה', nextStep: 'שליחת טיוטה מעודכנת לעו"ד', pct: 50, checkpoint: '',
+    tasks: [
+      {text:'מציאת מקום אחסון',done:false,owner:'',desc:'',type:'לוגיסטיקה',date:today,due:''},
+      {text:'הצעת מחיר עמילות מכס',done:false,owner:'',desc:'',type:'לוגיסטיקה',date:today,due:''},
+      {text:'רישוי?',done:false,owner:'',desc:'',type:'לוגיסטיקה',date:today,due:''}
+    ]
+  },
+  { id: 3, name: 'Apple Developer — EZ7 אפליקציה', type: 'עסקי', status: 'active', currentStatus: 'סיום אפיון ורישום באפל, אפיון מול אור דימרי', nextStep: 'סיום אפיון מיקלה', pct: 20, checkpoint: '',
+    tasks: [
+      {text:'סיום אפיון מיקלה',done:false,owner:'מיקלה',desc:'',type:'הפקה',date:today,due:''},
+      {text:'כתיבת אפיון רעיון כללי — אור דמרי',done:false,owner:'אור דמרי',desc:'',type:'הפקה',date:today,due:''},
+      {text:'רישום אפל',done:false,owner:'',desc:'',type:'לוגיסטיקה',date:today,due:''},
+      {text:'תרגום לעברית',done:false,owner:'',desc:'',type:'תוכן',date:today,due:''}
+    ]
+  }
+];
+
+let projects = [];
+let archive = [];
+let editingId = null;
+let editingTaskPid = null;
+let editingTaskIdx = null;
+let activeTab = 'all';
+let rowId = null;
+const CURRENT_USER_KEY = 'ez7_current_user';
+let currentUser = localStorage.getItem(CURRENT_USER_KEY) || '';
+// Track which domains are open per project: domainOpen[pid][domain] = bool
+let domainOpen = JSON.parse(localStorage.getItem('ez7_domain_open') || '{}');
+let activeFilter = '';
+
+function saveDomainState() { localStorage.setItem('ez7_domain_open', JSON.stringify(domainOpen)); }
+
+function setFilter(domain) {
+  activeFilter = domain;
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.includes(domain) || (domain === '' && btn.textContent === 'הכל'));
+  });
+  // Show/hide domain sections
+  DOMAINS.forEach(d => {
+    const sections = document.querySelectorAll(`[id^="db-"]`);
+    sections.forEach(el => {
+      const domainKey = el.id.split('-').slice(2).join('-');
+      const header = document.getElementById(el.id.replace('db-', 'dh-'));
+      const sectionEl = el.closest('.domain-section');
+      if (!sectionEl) return;
+      if (domain === '') {
+        sectionEl.style.display = '';
+      } else {
+        sectionEl.style.display = domainKey === domain ? '' : 'none';
+        if (domainKey === domain) {
+          // Auto-open filtered domain
+          el.classList.add('open');
+          const toggle = document.getElementById(el.id.replace('db-', 'dt-'));
+          if (toggle) toggle.classList.add('open');
+        }
+      }
+    });
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function setSyncStatus(online, label) {
+  document.getElementById('sync-dot').className = 'live-dot' + (online ? '' : ' offline');
+  document.getElementById('sync-label').textContent = label;
+}
+
+async function loadFromSupabase() {
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/projects?select=*&order=id.asc&limit=1', { headers: HEADERS });
+    if (!res.ok) throw new Error();
+    const rows = await res.json();
+    if (rows.length === 0) { await initSupabase(); return; }
+    rowId = rows[0].id;
+    const incoming = rows[0].data;
+    incoming.forEach(p => {
+      p.tasks.forEach(t => {
+        if (!t.date) t.date = today;
+        if (t.owner === undefined) t.owner = '';
+        if (t.desc === undefined) t.desc = '';
+        if (t.type === undefined) t.type = '';
+        if (t.due === undefined) t.due = '';
+      });
+      if (p.checkpoint === undefined) p.checkpoint = '';
+    });
+    if (JSON.stringify(incoming) !== JSON.stringify(projects)) { projects = incoming; render(); }
+    setSyncStatus(true, 'מסונכרן');
+  } catch(e) { setSyncStatus(false, 'לא מחובר'); }
+}
+
+async function initSupabase() {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/projects', {
+    method: 'POST', headers: { ...HEADERS, 'Prefer': 'return=representation' },
+    body: JSON.stringify({ data: DEFAULT_PROJECTS })
+  });
+  const rows = await res.json();
+  rowId = rows[0].id; projects = DEFAULT_PROJECTS; render();
+}
+
+async function saveToSupabase() {
+  if (!rowId) return;
+  try {
+    await fetch(SUPABASE_URL + '/rest/v1/projects?id=eq.' + rowId, {
+      method: 'PATCH', headers: { ...HEADERS, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ data: projects, updated_at: new Date().toISOString() })
+    });
+    setSyncStatus(true, 'מסונכרן');
+    document.getElementById('last-updated').textContent = 'עודכן: ' + new Date().toLocaleString('he-IL');
+  } catch(e) { setSyncStatus(false, 'שגיאה בשמירה'); }
+}
+
+function statusLabel(s) {
+  if (s === 'active') return { text: 'פעיל', cls: 'badge-active' };
+  if (s === 'slow') return { text: 'מתקדם לאט', cls: 'badge-slow' };
+  return { text: 'ממתין', cls: 'badge-waiting' };
+}
+function progressColor(pct) {
+  if (pct >= 60) return '#2D6A4F';
+  if (pct >= 35) return '#92400E';
+  return '#9D174D';
+}
+function fmtDate(d) {
+  if (!d) return '';
+  try { return new Date(d + 'T00:00:00').toLocaleDateString('he-IL', {day:'numeric',month:'numeric'}); } catch(e) { return d; }
+}
+function getDueClass(due) {
+  if (!due) return '';
+  const now = new Date(); now.setHours(0,0,0,0);
+  const d = new Date(due + 'T00:00:00');
+  const diff = Math.round((d - now) / 86400000);
+  if (diff < 0) return 'due-overdue';
+  if (diff <= 2) return 'due-soon';
+  return 'due-ok';
+}
+
+function getAllOwners() {
+  const owners = new Set();
+  projects.forEach(p => p.tasks.forEach(t => { if (t.owner && t.owner.trim()) owners.add(t.owner.trim()); }));
+  return Array.from(owners).sort();
+}
+
+function populateUserSelect() {
+  const sel = document.getElementById('user-select');
+  if (!sel) return;
+  const owners = getAllOwners();
+  const newHtml = '<option value="">מי אתה?</option>' + owners.map(o => `<option value="${o}">${o}</option>`).join('');
+  if (sel.getAttribute('data-opts') !== newHtml) {
+    sel.innerHTML = newHtml;
+    sel.setAttribute('data-opts', newHtml);
+  }
+  sel.value = owners.includes(currentUser) ? currentUser : '';
+}
+
+function onUserChange() {
+  currentUser = document.getElementById('user-select').value;
+  localStorage.setItem(CURRENT_USER_KEY, currentUser);
+  if (activeTab === 'mine') renderMyTasks();
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  ['all','mine','cal','sponsors','league'].forEach(t => {
+    const btn = document.getElementById('tab-' + t);
+    if (btn) btn.classList.toggle('active', tab === t);
+    const view = document.getElementById(t + '-view');
+    if (view) view.style.display = tab === t ? '' : 'none';
+  });
+  if (tab === 'mine') renderMyTasks();
+  if (tab === 'cal') renderCalendar();
+  if (tab === 'sponsors') renderSponsors();
+}
+
+function toggleDomain(pid, domain) {
+  if (!domainOpen[pid]) domainOpen[pid] = {};
+  domainOpen[pid][domain] = !domainOpen[pid][domain];
+  saveDomainState();
+  const body = document.getElementById(`db-${pid}-${domain}`);
+  const toggle = document.getElementById(`dt-${pid}-${domain}`);
+  if (body) body.classList.toggle('open', domainOpen[pid][domain]);
+  if (toggle) toggle.classList.toggle('open', domainOpen[pid][domain]);
+}
+
+function render() {
+  populateUserSelect();
+  if (activeTab === 'mine') renderMyTasks();
+
+  const container = document.getElementById('projects-container');
+  const openTasks = projects.reduce((a, p) => a + p.tasks.filter(t => !t.done).length, 0);
+  const avgPct = projects.length ? Math.round(projects.reduce((a, p) => a + p.pct, 0) / projects.length) : 0;
+  document.getElementById('stat-projects').textContent = projects.length;
+  document.getElementById('stat-avg').textContent = avgPct + '%';
+  document.getElementById('stat-tasks').textContent = openTasks;
+
+  container.innerHTML = projects.map(p => {
+    const sl = statusLabel(p.status);
+    const color = progressColor(p.pct);
+
+    const domainsHtml = DOMAINS.map(d => {
+      const tasks = p.tasks.filter(t => d.key === 'כללי' ? (!t.type || t.type === '' || t.type === 'כללי') : t.type === d.key);
+      const isOpen = domainOpen[p.id] && domainOpen[p.id][d.key];
+       const taskRows = tasks.map((t, _) => {
+         const idx = p.tasks.indexOf(t);
+         const dueClass = t.due ? getDueClass(t.due) : '';
+         return `<tr class="${t.done ? 'task-done-row' : ''}"
+           draggable="true"
+           ondragstart="onTaskDragStart(event,${p.id},${idx})"
+           ondragend="onTaskDragEnd(event)">
+           <td style="width:20px"><span class="drag-handle">⠿</span></td>
+           <td style="width:24px"><div class="task-cb ${t.done ? 'done' : ''}" onclick="toggleTask(${p.id},${idx})"></div></td>
+           <td>
+             <div class="task-name-cell ${t.done ? 'task-name-done' : ''}">${t.text}</div>
+             ${t.desc ? `<div class="task-desc-cell">${t.desc}</div>` : ''}
+           </td>
+           <td class="hide-m">${t.owner ? `<span class="owner-tag">👤 ${t.owner}</span>` : ''}</td>
+           <td class="hide-m">${t.due ? `<span class="task-due-badge ${dueClass}">${fmtDate(t.due)}</span>` : ''}</td>
+           <td style="width:80px"><div class="task-actions-cell">
+             ${t.done ? `<button class="task-act-btn" title="ארכיון" onclick="archiveTask(${p.id},${idx})">📦</button>` : ''}
+             <button class="task-act-btn" onclick="openTaskEdit(${p.id},${idx})">✏️</button>
+             <button class="task-act-btn" onclick="deleteTask(${p.id},${idx})">🗑️</button>
+           </div></td>
+         </tr>`;
+       }).join('');
+
+      const addRow = `<div class="add-task-row">
+        <input class="add-input task-name-inp" id="ti-${p.id}-${d.key}" placeholder="הוסף משימה ל${d.key}..." onkeydown="if(event.key==='Enter') addTask(${p.id},'${d.key}')" />
+        <input class="add-input owner-inp" id="to-${p.id}-${d.key}" placeholder="אחראי" />
+        <input type="date" class="add-input due-inp" id="td-${p.id}-${d.key}" title="תאריך יעד" />
+        <button class="btn btn-sm" onclick="addTask(${p.id},'${d.key}')">+</button>
+      </div>`;
+
+      return `<div class="domain-section">
+        <div class="domain-header" id="dh-${p.id}-${d.key}" onclick="toggleDomain(${p.id},'${d.key}')">
+          <span class="domain-icon">${d.icon}</span>
+          <span class="domain-name">${d.key}</span>
+          <span class="domain-count">${tasks.length}</span>
+          <span class="domain-toggle ${isOpen ? 'open' : ''}" id="dt-${p.id}-${d.key}">▾</span>
+        </div>
+        <div class="domain-body ${isOpen ? 'open' : ''}" id="db-${p.id}-${d.key}"
+          ondragover="onDomainDragOver(event)"
+          ondragleave="onDomainDragLeave(event)"
+          ondrop="onDomainDrop(event,${p.id},'${d.key}')">
+          ${tasks.length ? `<table class="task-table">
+            <thead><tr>
+              <th style="width:20px"></th>
+              <th></th><th>משימה</th>
+              <th class="hide-m">אחראי</th>
+              <th class="hide-m">יעד</th>
+              <th></th>
+            </tr></thead>
+            <tbody>${taskRows}</tbody>
+          </table>` : ''}
+          ${addRow}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="project-card">
+      <div class="project-header">
+        <div class="project-header-main">
+          <div class="project-name">${p.name}</div>
+          <div class="project-meta">
+            <span class="badge badge-type">${p.type}</span>
+            <span class="badge ${sl.cls}">${sl.text}</span>
+            <div class="progress-mini">
+              <div class="progress-track"><div class="progress-fill" style="width:${p.pct}%;background:${color}"></div></div>
+              <span class="progress-pct">${p.pct}%</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-actions">
+          <button class="btn btn-sm" onclick="openEdit(${p.id})">✏️</button>
+        </div>
+      </div>
+      ${p.currentStatus || p.nextStep ? `<div class="project-info">
+        ${p.currentStatus ? `<div class="info-row">סטטוס: <strong>${p.currentStatus}</strong></div>` : ''}
+        ${p.nextStep ? `<div class="info-row">הצעד הבא: <strong>${p.nextStep}</strong></div>` : ''}
+      </div>` : ''}
+      <div class="checkpoint-section">
+        <div class="checkpoint-label">📍 נקודת התחלה</div>
+        <textarea class="checkpoint-textarea" id="cp-${p.id}" placeholder="כתוב את המחשבה האחרונה לפני סגירת היום..." onblur="saveCheckpoint(${p.id})">${p.checkpoint || ''}</textarea>
+        <div class="checkpoint-saved" id="cp-status-${p.id}"></div>
+      </div>
+      <div class="domains-container">${domainsHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderMyTasks() {
+  const container = document.getElementById('my-tasks-container');
+  if (!currentUser) {
+    container.innerHTML = '<div class="my-task-empty">בחר את השם שלך בראש הדף</div>'; return;
+  }
+  let html = ''; let total = 0;
+  projects.forEach(p => {
+    const mine = p.tasks.filter(t => t.owner && t.owner.trim() === currentUser);
+    if (!mine.length) return;
+    total += mine.length;
+    html += `<div class="my-project-group">
+      <div class="my-project-label">${p.name}</div>
+      ${mine.map(t => {
+        const idx = p.tasks.indexOf(t);
+        const dueClass = t.due ? getDueClass(t.due) : '';
+        return `<div class="my-task-row">
+          <div class="task-cb ${t.done ? 'done' : ''}" onclick="toggleTask(${p.id},${idx})"></div>
+          <div class="my-task-name">${t.text}</div>
+          <div class="my-task-meta">
+            ${t.type ? `<span class="type-badge type-${t.type}">${t.type}</span>` : ''}
+            ${t.due ? `<span class="task-due-badge ${dueClass}">${fmtDate(t.due)}</span>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+  container.innerHTML = total ? html : '<div class="my-task-empty">אין משימות פתוחות עבורך כרגע 🎉</div>';
+}
+
+function addTask(pid, domain) {
+  const text = document.getElementById(`ti-${pid}-${domain}`)?.value.trim();
+  if (!text) return;
+  const owner = document.getElementById(`to-${pid}-${domain}`)?.value.trim() || '';
+  const due = document.getElementById(`td-${pid}-${domain}`)?.value || '';
+  const p = projects.find(x => x.id === pid);
+  if (p) {
+    p.tasks.push({ text, done: false, owner, desc: '', type: domain, date: today, due });
+    // Keep domain open
+    if (!domainOpen[pid]) domainOpen[pid] = {};
+    domainOpen[pid][domain] = true;
+    saveDomainState();
+    render(); saveToSupabase(); toast('משימה נוספה ✓');
+  }
+}
+
+function toggleTask(pid, idx) {
+  const p = projects.find(x => x.id === pid);
+  if (!p) return;
+  p.tasks[idx].done = !p.tasks[idx].done;
+  render(); saveToSupabase();
+}
+
+function archiveTask(pid, idx) {
+  const p = projects.find(x => x.id === pid);
+  if (!p) return;
+  const task = p.tasks[idx];
+  const archivedTask = { ...task, projectName: p.name, completedAt: new Date().toISOString() };
+  archive.push(archivedTask);
+  p.tasks.splice(idx, 1);
+  render(); saveToSupabase(); saveArchive(); toast('משימה הועברה לארכיון 📦');
+}
+
+function deleteTask(pid, idx) {
+  const p = projects.find(x => x.id === pid);
+  if (p) { p.tasks.splice(idx, 1); render(); saveToSupabase(); toast('משימה נמחקה'); }
+}
+
+function openTaskEdit(pid, idx) {
+  editingTaskPid = pid; editingTaskIdx = idx;
+  const t = projects.find(x => x.id === pid).tasks[idx];
+  document.getElementById('task-modal-title').textContent = 'עריכת משימה';
+  document.getElementById('task-edit-text').value = t.text;
+  document.getElementById('task-edit-desc').value = t.desc || '';
+  document.getElementById('task-edit-owner').value = t.owner || '';
+  document.getElementById('task-edit-type').value = t.type || '';
+  document.getElementById('task-edit-date').value = t.date || today;
+  document.getElementById('task-edit-due').value = t.due || '';
+  document.getElementById('task-modal').classList.add('open');
+}
+
+function saveTaskEdit() {
+  const text = document.getElementById('task-edit-text').value.trim();
+  if (!text) return;
+  const p = projects.find(x => x.id === editingTaskPid);
+  if (p && editingTaskIdx !== null) {
+    const t = p.tasks[editingTaskIdx];
+    t.text = text;
+    t.desc = document.getElementById('task-edit-desc').value.trim();
+    t.owner = document.getElementById('task-edit-owner').value.trim();
+    t.type = document.getElementById('task-edit-type').value;
+    t.date = document.getElementById('task-edit-date').value;
+    t.due = document.getElementById('task-edit-due').value;
+    render(); saveToSupabase(); closeTaskModal(); toast('משימה עודכנה ✓');
+  }
+}
+
+function deleteTaskFromModal() {
+  const p = projects.find(x => x.id === editingTaskPid);
+  if (p && editingTaskIdx !== null) {
+    p.tasks.splice(editingTaskIdx, 1);
+    render(); saveToSupabase(); closeTaskModal(); toast('משימה נמחקה');
+  }
+}
+
+function closeTaskModal(e) {
+  if (e && e.target !== document.getElementById('task-modal')) return;
+  document.getElementById('task-modal').classList.remove('open');
+  editingTaskPid = null; editingTaskIdx = null;
+}
+
+function saveCheckpoint(pid) {
+  const ta = document.getElementById('cp-' + pid);
+  const p = projects.find(x => x.id === pid);
+  if (p && ta) {
+    p.checkpoint = ta.value;
+    saveToSupabase();
+    const el = document.getElementById('cp-status-' + pid);
+    if (el) { el.textContent = 'נשמר ✓'; setTimeout(() => { if(el) el.textContent=''; }, 2000); }
+  }
+}
+
+function openEdit(pid) {
+  editingId = pid;
+  const p = projects.find(x => x.id === pid);
+  document.getElementById('modal-title').textContent = 'עריכת פרויקט';
+  document.getElementById('edit-name').value = p.name;
+  document.getElementById('edit-type').value = p.type;
+  document.getElementById('edit-status').value = p.status;
+  document.getElementById('edit-current-status').value = p.currentStatus || '';
+  document.getElementById('edit-next-step').value = p.nextStep || '';
+  document.getElementById('edit-pct').value = p.pct;
+  document.getElementById('edit-pct-label').textContent = p.pct + '%';
+  document.getElementById('modal').classList.add('open');
+}
+
+function openAddProject() {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'פרויקט חדש';
+  ['edit-name','edit-current-status','edit-next-step'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('edit-type').value = 'עסקי';
+  document.getElementById('edit-status').value = 'active';
+  document.getElementById('edit-pct').value = 0;
+  document.getElementById('edit-pct-label').textContent = '0%';
+  document.getElementById('modal').classList.add('open');
+}
+
+function saveEdit() {
+  const name = document.getElementById('edit-name').value.trim();
+  if (!name) return;
+  if (editingId) {
+    const p = projects.find(x => x.id === editingId);
+    if (p) { p.name = name; p.type = document.getElementById('edit-type').value; p.status = document.getElementById('edit-status').value; p.currentStatus = document.getElementById('edit-current-status').value; p.nextStep = document.getElementById('edit-next-step').value; p.pct = parseInt(document.getElementById('edit-pct').value); }
+  } else {
+    const newId = Math.max(0, ...projects.map(p => p.id)) + 1;
+    projects.push({ id: newId, name, type: document.getElementById('edit-type').value, status: document.getElementById('edit-status').value, currentStatus: document.getElementById('edit-current-status').value, nextStep: document.getElementById('edit-next-step').value, pct: parseInt(document.getElementById('edit-pct').value), checkpoint: '', tasks: [] });
+  }
+  render(); saveToSupabase(); closeModal(); toast('נשמר ✓');
+}
+
+function deleteProject() {
+  if (!editingId || !confirm('למחוק את הפרויקט?')) return;
+  projects = projects.filter(p => p.id !== editingId);
+  render(); saveToSupabase(); closeModal(); toast('פרויקט נמחק');
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modal')) return;
+  document.getElementById('modal').classList.remove('open');
+}
+
+function loadArchive() {
+  try { archive = JSON.parse(localStorage.getItem('ez7_archive') || '[]'); } catch(e) { archive = []; }
+}
+function saveArchive() { localStorage.setItem('ez7_archive', JSON.stringify(archive)); }
+
+function openArchive() {
+  const list = document.getElementById('archive-list');
+  if (!archive.length) { list.innerHTML = '<div class="archive-empty">אין משימות בארכיון עדיין</div>'; }
+  else {
+    const grouped = {};
+    archive.forEach(t => { if (!grouped[t.projectName]) grouped[t.projectName] = []; grouped[t.projectName].push(t); });
+    list.innerHTML = Object.entries(grouped).map(([proj, tasks]) => `
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:6px">${proj}</div>
+        ${tasks.map(t => `<div class="archive-item">
+          <div style="flex:1">
+            <div class="archive-item-name">${t.text}</div>
+            <div class="archive-item-meta">
+              ${t.owner ? '<span>👤 '+t.owner+'</span>' : ''}
+              ${t.type ? '<span>🏷️ '+t.type+'</span>' : ''}
+              ${t.completedAt ? '<span>✓ '+new Date(t.completedAt).toLocaleDateString("he-IL")+'</span>' : ''}
+            </div>
+          </div>
+          <button class="btn btn-sm" onclick="restoreTask('${proj}',${archive.indexOf(t)})">↩️</button>
+        </div>`).join('')}
+      </div>`).join('');
+  }
+  document.getElementById('archive-modal').classList.add('open');
+}
+
+function restoreTask(projectName, archiveIdx) {
+  const task = archive[archiveIdx];
+  if (!task) return;
+  const p = projects.find(x => x.name === projectName);
+  if (p) {
+    const { completedAt, projectName: pn, ...restored } = task;
+    restored.done = false;
+    p.tasks.push(restored);
+    archive.splice(archiveIdx, 1);
+    render(); saveToSupabase(); saveArchive(); closeArchiveModal(); toast('משימה שוחזרה ✓');
+  }
+}
+
+function clearArchive() {
+  if (!confirm('למחוק את כל הארכיון?')) return;
+  archive = []; saveArchive(); openArchive(); toast('ארכיון נוקה');
+}
+
+function closeArchiveModal(e) {
+  if (e && e.target !== document.getElementById('archive-modal')) return;
+  document.getElementById('archive-modal').classList.remove('open');
+}
+
+async function askAI() {
+  const input = document.getElementById('ai-input');
+  const responseEl = document.getElementById('ai-response');
+  const question = input.value.trim();
+  if (!question) return;
+  responseEl.className = 'ai-response visible';
+  responseEl.innerHTML = '<div class="loading-dots"><span>•</span><span>•</span><span>•</span></div>';
+  input.value = '';
+  const summary = projects.map(p => `פרויקט: ${p.name}\nסטטוס: ${p.currentStatus||'—'}\nהתקדמות: ${p.pct}%\nהצעד הבא: ${p.nextStep||'—'}\nמשימות פתוחות: ${p.tasks.map(t=>`${t.text}${t.owner?' ('+t.owner+')':''}${t.type?' ['+t.type+']':''}`).join(', ')||'אין'}`).join('\n---\n');
+  try {
+    const res = await fetch('https://ez7-ai-proxy.petizer.workers.dev', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000,
+        system: 'אתה עוזר עסקי של גיא פטיזר. ענה בעברית, קצר וממוקד.\n\nנתוני פרויקטים:\n' + summary,
+        messages: [{ role: 'user', content: question }] })
+    });
+    if (!res.ok) { responseEl.textContent = 'שגיאת שרת: ' + res.status; return; }
+    const data = await res.json();
+    if (data.error) { responseEl.textContent = 'שגיאה: ' + data.error.message; return; }
+    responseEl.textContent = data.content?.find(b => b.type === 'text')?.text || 'לא התקבלה תשובה.';
+  } catch(e) { responseEl.textContent = 'שגיאה בחיבור ל-AI.'; }
+}
+
+
+
+
+
+// ===== DRAG & DROP =====
+let dragPid = null;
+let dragIdx = null;
+
+function onTaskDragStart(e, pid, idx) {
+  dragPid = pid;
+  dragIdx = idx;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => {
+    const row = e.target.closest('tr');
+    if (row) row.classList.add('task-row-dragging');
+  }, 0);
+}
+
+function onTaskDragEnd(e) {
+  document.querySelectorAll('.task-row-dragging').forEach(el => el.classList.remove('task-row-dragging'));
+  document.querySelectorAll('.domain-body.drag-over').forEach(el => el.classList.remove('drag-over'));
+  dragPid = null; dragIdx = null;
+}
+
+function onDomainDragOver(e) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+
+function onDomainDragLeave(e) {
+  e.currentTarget.classList.remove('drag-over');
+}
+
+function onDomainDrop(e, pid, newDomain) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (dragPid === null || dragIdx === null) return;
+  const srcProject = projects.find(x => x.id === dragPid);
+  const dstProject = projects.find(x => x.id === pid);
+  if (!srcProject || !dstProject) return;
+  const task = srcProject.tasks[dragIdx];
+  if (!task) return;
+
+  // Same project, same domain — do nothing
+  if (dragPid === pid && task.type === newDomain) return;
+
+  // Move task
+  srcProject.tasks.splice(dragIdx, 1);
+  task.type = newDomain;
+
+  // Keep domain open on drop
+  if (!domainOpen[pid]) domainOpen[pid] = {};
+  domainOpen[pid][newDomain] = true;
+  saveDomainState();
+
+  // If moved to different project, add to destination
+  if (dragPid !== pid) {
+    dstProject.tasks.push(task);
+  } else {
+    srcProject.tasks.push(task);
+  }
+
+  dragPid = null; dragIdx = null;
+  render(); saveToSupabase(); toast('משימה הועברה ✓');
+}
+
+// ===== SPONSORS =====
+const SP_ASSETS = [
+  { key: 'logo_shirt', label: '👕 לוגו על חולצה' },
+  { key: 'logo_court', label: '🎾 מיתוג מגרש' },
+  { key: 'logo_event', label: '🎪 מיתוג באירוע' },
+  { key: 'content_social', label: '📱 תוכן ברשתות' },
+  { key: 'video', label: '🎬 תוכן וידאו' },
+  { key: 'banner', label: '🏳️ באנר' },
+  { key: 'naming', label: '🏆 נאמינג ריידס' },
+  { key: 'digital', label: '💻 דיגיטל' },
+  { key: 'product', label: '🎁 מוצר/הפקה' },
+];
+
+const SP_STATUS_LABELS = {
+  contact: { text: 'בקשר', cls: 'sp-s-contact' },
+  sent: { text: 'הצעה נשלחה', cls: 'sp-s-sent' },
+  closed: { text: 'סגור ✓', cls: 'sp-s-closed' },
+  lost: { text: 'לא התקדם', cls: 'sp-s-lost' },
+};
+
+let sponsors = [];
+let spFilter = 'all';
+let spOpenId = null;
+let spEditingId = null;
+
+function loadSponsors() {
+  try { sponsors = JSON.parse(localStorage.getItem('ez7_sponsors') || '[]'); } catch(e) { sponsors = []; }
+}
+function saveSponsors() { localStorage.setItem('ez7_sponsors', JSON.stringify(sponsors)); }
+
+function setSpFilter(f) {
+  spFilter = f;
+  document.querySelectorAll('.sp-pill').forEach(p => p.classList.toggle('active', p.dataset.f === f));
+  renderSponsors();
+}
+
+function renderSponsors() {
+  const container = document.getElementById('sponsors-container');
+  const filtered = spFilter === 'all' ? sponsors : sponsors.filter(s => s.status === spFilter);
+
+  // Stats
+  const total = sponsors.length;
+  const totalAmt = sponsors.filter(s => s.status === 'closed').reduce((a,s) => a + (parseFloat(s.amount)||0), 0);
+  const pipeline = sponsors.filter(s => s.status !== 'lost').reduce((a,s) => a + (parseFloat(s.amount)||0), 0);
+  const sent = sponsors.filter(s => s.status === 'sent' || s.status === 'closed').length;
+
+  container.innerHTML = `
+    <div class="sp-toolbar">
+      <div class="sp-filter-pills">
+        <button class="sp-pill ${spFilter==='all'?'active':''}" data-f="all" onclick="setSpFilter('all')">הכל (${total})</button>
+        <button class="sp-pill ${spFilter==='contact'?'active':''}" data-f="contact" onclick="setSpFilter('contact')">בקשר</button>
+        <button class="sp-pill ${spFilter==='sent'?'active':''}" data-f="sent" onclick="setSpFilter('sent')">הצעה נשלחה</button>
+        <button class="sp-pill ${spFilter==='closed'?'active':''}" data-f="closed" onclick="setSpFilter('closed')">סגור ✓</button>
+        <button class="sp-pill ${spFilter==='lost'?'active':''}" data-f="lost" onclick="setSpFilter('lost')">לא התקדם</button>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-right:auto" onclick="openSponsorModal(null)">+ ספונסר חדש</button>
+    </div>
+
+    <div class="sp-stats">
+      <div class="sp-stat"><div class="sp-stat-val">${total}</div><div class="sp-stat-lbl">ספונסרים</div></div>
+      <div class="sp-stat"><div class="sp-stat-val">${sent}</div><div class="sp-stat-lbl">הצעות שנשלחו</div></div>
+      <div class="sp-stat"><div class="sp-stat-val" style="color:#2D6A4F">₪${totalAmt.toLocaleString('he-IL')}</div><div class="sp-stat-lbl">סגור</div></div>
+      <div class="sp-stat"><div class="sp-stat-val" style="color:#92400E">₪${pipeline.toLocaleString('he-IL')}</div><div class="sp-stat-lbl">פייפליין</div></div>
+    </div>
+
+    ${filtered.length === 0 ? '<div class="sp-empty">אין ספונסרים עדיין — לחץ + להוספה</div>' :
+      filtered.map(s => renderSponsorCard(s)).join('')}
+  `;
+}
+
+function renderSponsorCard(s) {
+  const sl = SP_STATUS_LABELS[s.status] || SP_STATUS_LABELS.contact;
+  const isOpen = spOpenId === s.id;
+  const assetsHtml = SP_ASSETS.map(a => {
+    const sel = (s.assets || []).includes(a.key);
+    return `<div class="sp-asset-chip ${sel?'selected':''}" onclick="toggleAsset('${s.id}','${a.key}')">${a.label}</div>`;
+  }).join('');
+
+  const summaryHtml = s.summary ? `
+    <div class="sp-summary-box">
+      <div class="sp-summary-label">✨ סיכום הצעה</div>
+      ${s.summary}
+    </div>` : '';
+
+  return `<div class="sp-card">
+    <div class="sp-card-header" onclick="toggleSponsorCard('${s.id}')">
+      <div class="sp-card-main">
+        <div class="sp-name">${s.name}</div>
+        <div class="sp-meta">
+          <span class="sp-status-badge ${sl.cls}">${sl.text}</span>
+          ${s.amount ? `<span class="sp-amount">₪${parseFloat(s.amount).toLocaleString('he-IL')}</span>` : ''}
+          ${s.date ? `<span class="sp-date">נשלח: ${fmtDate(s.date)}</span>` : ''}
+          ${s.assets && s.assets.length ? `<span style="font-size:11px;color:var(--text-muted)">${s.assets.length} נכסים</span>` : ''}
+        </div>
+      </div>
+      <div class="sp-card-actions">
+        <button class="btn btn-sm" onclick="event.stopPropagation();openSponsorModal('${s.id}')">✏️</button>
+        <span style="color:var(--text-muted);font-size:12px">${isOpen?'▲':'▼'}</span>
+      </div>
+    </div>
+    <div class="sp-body ${isOpen?'open':''}">
+      <div class="sp-assets-section">
+        <div class="sp-assets-label">נכסי חסות</div>
+        <div class="sp-assets-grid">${assetsHtml}</div>
+      </div>
+      ${s.notes ? `<div style="font-size:13px;color:var(--text-secondary);margin-top:10px;padding:8px 10px;background:var(--bg);border-radius:var(--radius-sm)">${s.notes}</div>` : ''}
+      ${summaryHtml}
+      <button class="sp-gen-btn" onclick="generateSponsorSummary('${s.id}')">✨ צור סיכום AI</button>
+    </div>
+  </div>`;
+}
+
+function toggleSponsorCard(id) {
+  spOpenId = spOpenId === id ? null : id;
+  renderSponsors();
+}
+
+function toggleAsset(spId, assetKey) {
+  const s = sponsors.find(x => x.id === spId);
+  if (!s) return;
+  if (!s.assets) s.assets = [];
+  const idx = s.assets.indexOf(assetKey);
+  if (idx >= 0) s.assets.splice(idx, 1);
+  else s.assets.push(assetKey);
+  saveSponsors();
+  renderSponsors();
+}
+
+async function generateSponsorSummary(spId) {
+  const s = sponsors.find(x => x.id === spId);
+  if (!s) return;
+  const assetLabels = (s.assets || []).map(k => SP_ASSETS.find(a => a.key === k)?.label || k).join(', ');
+  const prompt = `אתה עוזר שיווקי של EZ7 Padel Tour — ליגת פאדל ישראלית.
+כתוב סיכום קצר (2-3 משפטים) להצעת חסות עבור ${s.name}.
+סכום: ₪${s.amount || '?'}
+נכסים: ${assetLabels || 'לא הוגדרו עדיין'}
+הערות: ${s.notes || 'אין'}
+כתוב בעברית, טון עסקי-חם, ממוקד בערך שמקבל הספונסר.`;
+
+  toast('מייצר סיכום...');
+  try {
+    const res = await fetch('https://ez7-ai-proxy.petizer.workers.dev', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 300,
+        messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await res.json();
+    const summary = data.content?.find(b => b.type === 'text')?.text || '';
+    s.summary = summary;
+    saveSponsors();
+    renderSponsors();
+    toast('סיכום נוצר ✓');
+  } catch(e) { toast('שגיאה בחיבור AI'); }
+}
+
+function openSponsorModal(id) {
+  spEditingId = id;
+  const s = id ? sponsors.find(x => x.id === id) : null;
+  document.getElementById('sponsor-modal-title').textContent = s ? 'עריכת ספונסר' : 'ספונסר חדש';
+  document.getElementById('sp-edit-name').value = s?.name || '';
+  document.getElementById('sp-edit-amount').value = s?.amount || '';
+  document.getElementById('sp-edit-status').value = s?.status || 'contact';
+  document.getElementById('sp-edit-date').value = s?.date || '';
+  document.getElementById('sp-edit-notes').value = s?.notes || '';
+  document.getElementById('sp-del-btn').style.display = s ? '' : 'none';
+  document.getElementById('sponsor-modal').classList.add('open');
+}
+
+function saveSponsorModal() {
+  const name = document.getElementById('sp-edit-name').value.trim();
+  if (!name) return;
+  if (spEditingId) {
+    const s = sponsors.find(x => x.id === spEditingId);
+    if (s) {
+      s.name = name;
+      s.amount = document.getElementById('sp-edit-amount').value;
+      s.status = document.getElementById('sp-edit-status').value;
+      s.date = document.getElementById('sp-edit-date').value;
+      s.notes = document.getElementById('sp-edit-notes').value;
+    }
+  } else {
+    sponsors.push({
+      id: Date.now().toString(),
+      name, amount: document.getElementById('sp-edit-amount').value,
+      status: document.getElementById('sp-edit-status').value,
+      date: document.getElementById('sp-edit-date').value,
+      notes: document.getElementById('sp-edit-notes').value,
+      assets: [], summary: ''
+    });
+  }
+  saveSponsors(); renderSponsors(); closeSponsorModal(); toast('נשמר ✓');
+}
+
+function deleteSponsorFromModal() {
+  if (!spEditingId || !confirm('למחוק ספונסר?')) return;
+  sponsors = sponsors.filter(x => x.id !== spEditingId);
+  saveSponsors(); renderSponsors(); closeSponsorModal(); toast('ספונסר נמחק');
+}
+
+function closeSponsorModal(e) {
+  if (e && e.target !== document.getElementById('sponsor-modal')) return;
+  document.getElementById('sponsor-modal').classList.remove('open');
+}
+
+// ===== CALENDAR =====
+const HE_MONTHS = ['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const HE_DAYS = ['א','ב','ג','ד','ה','ו','ש'];
+const SEASON_START = { year: 2026, month: 8 }; // September 2026 (0-indexed month 8)
+const SEASON_MONTHS = 10; // Sep 2026 - Jun 2027
+
+// Israeli holidays (date string -> name)
+const HOLIDAYS = {
+  '2026-09-12': 'ראש השנה', '2026-09-13': 'ראש השנה',
+  '2026-09-21': 'יום כיפור',
+  '2026-09-26': 'סוכות', '2026-10-03': 'שמחת תורה',
+  '2026-12-14': 'חנוכה', '2026-12-15': 'חנוכה', '2026-12-16': 'חנוכה',
+  '2026-12-17': 'חנוכה', '2026-12-18': 'חנוכה', '2026-12-19': 'חנוכה',
+  '2027-03-13': 'פורים',
+  '2027-04-01': 'פסח', '2027-04-07': 'פסח',
+  '2027-04-21': 'יום העצמאות',
+  '2027-05-20': 'שבועות',
+};
+
+let calView = 'overview'; // 'overview' | 'month'
+let calCurrentMonth = SEASON_START.month;
+let calCurrentYear = SEASON_START.year;
+let calEvents = {}; // { 'YYYY-MM-DD': [{type, text, location}] }
+let calModalDate = null;
+let calSelectedType = 'game';
+
+function loadCalEvents() {
+  try { calEvents = JSON.parse(localStorage.getItem('ez7_cal_events') || '{}'); } catch(e) { calEvents = {}; }
+  loadScheduleFromSupabase();
+}
+
+var scheduleEvents = {}; // date -> [{type,text,location,house,category}]
+
+function loadScheduleFromSupabase() {
+  fetch('https://lmpfvtbsisvwvsuumkja.supabase.co/rest/v1/schedule?select=*&date=not.is.null&date=neq.', {
+    headers: {
+      'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcGZ2dGJzaXN2d3ZzdXVta2phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MjQ3NDIsImV4cCI6MjA5NzAwMDc0Mn0.MkrkrlL9_HRTBJMf3e2HXuHbEUOrMjH0Id3xoq5uWxM',
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtcGZ2dGJzaXN2d3ZzdXVta2phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MjQ3NDIsImV4cCI6MjA5NzAwMDc0Mn0.MkrkrlL9_HRTBJMf3e2HXuHbEUOrMjH0Id3xoq5uWxM'
+    }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(rows) {
+    scheduleEvents = {};
+    rows.forEach(function(row) {
+      if (!row.date) return;
+      if (!scheduleEvents[row.date]) scheduleEvents[row.date] = [];
+      scheduleEvents[row.date].push({
+        type: 'game',
+        text: 'קטגוריה ' + row.cat + ' · בית ' + row.house + ' · סיבוב ' + row.round,
+        location: row.venue || '',
+        house: row.house,
+        category: row.cat,
+        round: row.round,
+        fromSchedule: true
+      });
+    });
+    if (activeTab === 'cal') renderCalendar();
+  })
+  .catch(function(e) { console.warn('Schedule load failed', e); });
+}
+function saveCalEvents() { localStorage.setItem('ez7_cal_events', JSON.stringify(calEvents)); }
+
+function getDateStr(y, m, d) {
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+function getTaskEvents() {
+  // Merge due-date tasks into calendar events view
+  const merged = {};
+  projects.forEach(p => p.tasks.forEach(t => {
+    if (t.due) {
+      if (!merged[t.due]) merged[t.due] = [];
+      merged[t.due].push({ type: 'task', text: t.text, location: '' });
+    }
+  }));
+  return merged;
+}
+
+function getAllEventsForDate(dateStr) {
+  const manual = calEvents[dateStr] || [];
+  const taskEvts = getTaskEvents()[dateStr] || [];
+  const schEvts = scheduleEvents[dateStr] || [];
+  return [...manual, ...taskEvts, ...schEvts];
+}
+
+function renderCalendar() {
+  const container = document.getElementById('calendar-container');
+  const taskEvts = getTaskEvents();
+  const allEventDates = new Set([...Object.keys(calEvents), ...Object.keys(taskEvts)]);
+
+  if (calView === 'house') {
+    container.innerHTML = `
+      <div class="cal-header">
+        <div>
+          <div class="cal-title">לוח בית</div>
+          <div class="cal-season">עונת 2026–2027</div>
+        </div>
+        <div class="cal-view-btns">
+          <button class="cal-view-btn" onclick="setCalView('overview')">מבט כולל</button>
+          <button class="cal-view-btn" onclick="setCalView('month')">מבט חודשי</button>
+          <button class="cal-view-btn active" onclick="setCalView('house')">לוח בית</button>
+        </div>
+      </div>
+      ${renderHouseView()}`;
+    return;
+  }
+
+  if (calView === 'overview') {
+    let months = '';
+    for (let i = 0; i < SEASON_MONTHS; i++) {
+      let m = (SEASON_START.month + i) % 12;
+      let y = SEASON_START.year + Math.floor((SEASON_START.month + i) / 12);
+      months += renderMiniMonth(y, m, allEventDates);
+    }
+    container.innerHTML = `
+      <div class="cal-header">
+        <div>
+          <div class="cal-title">לוח שנה עונתי</div>
+          <div class="cal-season">עונת 2026–2027</div>
+        </div>
+        <div class="cal-view-btns">
+          <button class="cal-view-btn active" onclick="setCalView('overview')">מבט כולל</button>
+          <button class="cal-view-btn" onclick="setCalView('month')">מבט חודשי</button>
+          <button class="cal-view-btn" onclick="setCalView('house')">לוח בית</button>
+        </div>
+      </div>
+      <div class="cal-overview">${months}</div>`;
+  } else {
+    container.innerHTML = `
+      <div class="cal-header">
+        <div class="cal-nav">
+          <button class="cal-nav-btn" onclick="calNavMonth(-1)">›</button>
+          <button class="cal-nav-btn" onclick="calNavMonth(1)">‹</button>
+        </div>
+        <div style="text-align:center">
+          <div class="cal-month-big-title">${HE_MONTHS[calCurrentMonth]} ${calCurrentYear}</div>
+          <div class="cal-month-underline"></div>
+        </div>
+        <div class="cal-view-btns">
+          <button class="cal-view-btn" onclick="setCalView('overview')">מבט כולל</button>
+          <button class="cal-view-btn active" onclick="setCalView('month')">מבט חודשי</button>
+          <button class="cal-view-btn" onclick="setCalView('house')">לוח בית</button>
+        </div>
+      </div>
+      ${renderBigMonth(calCurrentYear, calCurrentMonth)}`;
+  }
+}
+
+function renderMiniMonth(year, month, allEventDates) {
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = new Date().toISOString().split('T')[0];
+  // Sunday=0 in JS, but our grid starts Sunday (א) on right (index 0 in RTL)
+  // RTL grid: א(0) ב(1) ג(2) ד(3) ה(4) ו(5) ש(6)
+  let cells = '';
+  let blanks = firstDay; // Sunday=0 means no blanks at start
+  for (let i = 0; i < blanks; i++) cells += '<td></td>';
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = getDateStr(year, month, d);
+    const dow = new Date(year, month, d).getDay();
+    const isWeekend = dow === 5 || dow === 6;
+    const isHoliday = !!HOLIDAYS[dateStr];
+    const hasEvent = allEventDates.has(dateStr);
+    const isToday = dateStr === todayStr;
+    let cls = '';
+    if (isToday) cls = 'cal-mini-day-today';
+    else if (isHoliday) cls = 'cal-mini-day-holiday';
+    else if (isWeekend) cls = 'cal-mini-day-weekend';
+    if (hasEvent && !isToday) cls += ' cal-mini-day-has-event';
+    cells += `<td class="${cls}" onclick="openMonthAt(${year},${month},${d})">${d}</td>`;
+    if ((blanks + d) % 7 === 0 && d < daysInMonth) cells += '</tr><tr>';
+  }
+  return `<div class="cal-month-mini">
+    <div class="cal-month-mini-title">${HE_MONTHS[month]} ${year}</div>
+    <table class="cal-mini-grid">
+      <thead><tr>${HE_DAYS.map(d=>'<th>'+d+'</th>').join('')}</tr></thead>
+      <tbody><tr>${cells}</tr></tbody>
+    </table>
+  </div>`;
+}
+
+function renderBigMonth(year, month) {
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const todayStr = new Date().toISOString().split('T')[0];
+  let days = [];
+  for (let i = 0; i < firstDay; i++) {
+    const prevDate = new Date(year, month, -firstDay + i + 1);
+    days.push({ d: prevDate.getDate(), m: prevDate.getMonth(), y: prevDate.getFullYear(), other: true });
+  }
+  for (let d = 1; d <= daysInMonth; d++) days.push({ d, m: month, y: year, other: false });
+  while (days.length % 7 !== 0) {
+    const nd = days.length - firstDay - daysInMonth + 1;
+    days.push({ d: nd, m: (month + 1) % 12, y: month === 11 ? year + 1 : year, other: true });
+  }
+  let html = '<div class="cal-month-view">';
+  html += `<div class="cal-grid-header">${HE_DAYS.map(d=>'<span>'+d+'</span>').join('')}</div>`;
+  html += '<div class="cal-grid">';
+  days.forEach(({ d, m, y, other }) => {
+    const dateStr = getDateStr(y, m, d);
+    const dow = new Date(y, m, d).getDay();
+    const isWeekend = dow === 5 || dow === 6;
+    const isHoliday = !!HOLIDAYS[dateStr];
+    const isToday = dateStr === todayStr;
+    const allEvts = getAllEventsForDate(dateStr);
+    let cls = 'cal-day';
+    if (other) cls += ' other-month';
+    if (isToday) cls += ' today';
+    if (isHoliday) cls += ' has-holiday';
+    if (isWeekend) cls += ' cal-day-weekend';
+    const evtPills = allEvts.slice(0, 3).map(e => {
+      const pillCls = e.type === 'game' ? 'cal-event-game' : e.type === 'task' ? 'cal-event-task' : 'cal-event-event';
+      const icon = e.type === 'game' ? '⚽' : e.type === 'task' ? '✅' : '📌';
+      const houseLabel = e.house ? ' בית ' + e.house : '';
+      const catLabel = e.category ? ' [' + e.category + ']' : '';
+      return `<div class="cal-event-pill ${pillCls}" title="${e.location || ''}">${icon} ${e.text}${catLabel}${houseLabel}</div>`;
+    }).join('');
+    const holidayName = HOLIDAYS[dateStr] ? `<div class="cal-day-holiday-name">${HOLIDAYS[dateStr]}</div>` : '';
+    html += `<div class="${cls}" onclick="openCalModal('${dateStr}')">
+      <div class="cal-day-num">${d}</div>
+      ${holidayName}
+      <div class="cal-day-events">${evtPills}</div>
+    </div>`;
+  });
+  html += '</div></div>';
+  return html;
+}
+
+let houseFilterCat = 'A';
+let houseFilterNum = '1';
+
+function setCalView(v) {
+  calView = v;
+  renderCalendar();
+}
+
+function renderHouseView() {
+  const allGames = [];
+  // Collect all game events across all dates
+  Object.entries(calEvents).forEach(([dateStr, evts]) => {
+    evts.forEach(e => {
+      if (e.type === 'game' && e.category === houseFilterCat && String(e.house) === String(houseFilterNum)) {
+        allGames.push({ dateStr, ...e });
+      }
+    });
+  });
+  allGames.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+
+  const HE_DOW = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+  const gamesHtml = allGames.length ? allGames.map(g => {
+    const d = new Date(g.dateStr + 'T00:00:00');
+    const dateLabel = d.toLocaleDateString('he-IL', {day:'numeric', month:'long', year:'numeric'});
+    const dow = HE_DOW[d.getDay()];
+    return `<div class="house-game-row">
+      <div>
+        <div class="house-game-date">${dateLabel}</div>
+        <div class="house-game-day">יום ${dow}</div>
+      </div>
+      <div class="house-game-info">
+        <div class="house-game-name">${g.text}</div>
+        ${g.location ? `<div class="house-game-venue">${g.location}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('') : '<div class="house-empty">אין משחקים רשומים לבית זה עדיין</div>';
+
+  return `<div class="house-view">
+    <div class="house-selector">
+      <label>קטגוריה:</label>
+      <select onchange="houseFilterCat=this.value;renderCalendar()">
+        ${['A','B','C'].map(c => `<option value="${c}" ${c===houseFilterCat?'selected':''}>${c}</option>`).join('')}
+      </select>
+      <label>בית מספר:</label>
+      <select onchange="houseFilterNum=this.value;renderCalendar()">
+        ${Array.from({length:30},(_,i)=>i+1).map(n => `<option value="${n}" ${String(n)===String(houseFilterNum)?'selected':''}>${n}</option>`).join('')}
+      </select>
+      <button class="house-export-btn" onclick="exportHouseSchedule()">⬇️ ייצוא CSV</button>
+    </div>
+    <div class="house-schedule">
+      <div class="house-schedule-header">
+        <div>
+          <div class="house-schedule-title">בית ${houseFilterNum} — קטגוריה ${houseFilterCat}</div>
+          <div class="house-schedule-sub">עונת 2026–2027 · ${allGames.length} משחקים</div>
+        </div>
+      </div>
+      ${gamesHtml}
+    </div>
+  </div>`;
+}
+
+function exportHouseSchedule() {
+  const allGames = [];
+  Object.entries(calEvents).forEach(([dateStr, evts]) => {
+    evts.forEach(e => {
+      if (e.type === 'game' && e.category === houseFilterCat && String(e.house) === String(houseFilterNum)) {
+        allGames.push({ dateStr, ...e });
+      }
+    });
+  });
+  allGames.sort((a, b) => a.dateStr.localeCompare(b.dateStr));
+
+  const rows = [['תאריך','משחק','מתחם','קטגוריה','בית']];
+  allGames.forEach(g => rows.push([g.dateStr, g.text, g.location||'', g.category||'', g.house||'']));
+  const csv = rows.map(r => r.map(c => '"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `בית_${houseFilterNum}_קטגוריה_${houseFilterCat}.csv`;
+  a.click();
+  toast('ייצוא הושלם ✓');
+}
+
+function openMonthAt(year, month, day) {
+  calCurrentYear = year;
+  calCurrentMonth = month;
+  calView = 'month';
+  renderCalendar();
+  // Open modal for that day after render
+  setTimeout(() => openCalModal(getDateStr(year, month, day)), 50);
+}
+
+function calNavMonth(dir) {
+  calCurrentMonth += dir;
+  if (calCurrentMonth > 11) { calCurrentMonth = 0; calCurrentYear++; }
+  if (calCurrentMonth < 0) { calCurrentMonth = 11; calCurrentYear--; }
+  renderCalendar();
+}
+
+function openCalModal(dateStr) {
+  calModalDate = dateStr;
+  const [y, m, d] = dateStr.split('-').map(Number);
+  const heDate = `${d} ${HE_MONTHS[m-1]} ${y}`;
+  document.getElementById('cal-modal-title').textContent = heDate;
+  document.getElementById('cal-event-text').value = '';
+  document.getElementById('cal-event-location').value = '';
+  const venueEl = document.getElementById('cal-event-venue');
+  if (venueEl) venueEl.value = '';
+  const houseEl = document.getElementById('cal-event-house');
+  if (houseEl) houseEl.value = '';
+  const catEl = document.getElementById('cal-event-category');
+  if (catEl) catEl.value = '';
+  selectCalType('game');
+  renderCalEventsList();
+  document.getElementById('cal-modal').classList.add('open');
+}
+
+function renderCalEventsList() {
+  const allEvts = getAllEventsForDate(calModalDate);
+  const manualEvts = calEvents[calModalDate] || [];
+  if (!allEvts.length) { document.getElementById('cal-events-list').innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:4px 0">אין אירועים ביום זה</div>'; return; }
+  document.getElementById('cal-events-list').innerHTML = allEvts.map((e, i) => {
+    const icon = e.type === 'game' ? '⚽' : e.type === 'task' ? '✅' : '📌';
+    const isManual = i < manualEvts.length;
+    return `<div class="event-list-item">
+      <span>${icon}</span>
+      <span style="flex:1">
+            <strong>${e.text}</strong>
+            ${e.category || e.house ? '<span style="font-size:11px;background:#012f69;color:white;padding:1px 6px;border-radius:8px;margin-right:4px">' + (e.category || '') + (e.house ? ' · בית ' + e.house : '') + '</span>' : ''}
+            ${e.location ? '<br><span style="font-size:11px;color:var(--text-muted)">📍 ' + e.location + '</span>' : ''}
+          </span>
+      ${isManual ? `<button class="event-del-btn" onclick="deleteCalEvent(${i})">✕</button>` : '<span style="font-size:10px;color:var(--text-muted)">משימה</span>'}
+    </div>`;
+  }).join('');
+}
+
+function selectCalType(type) {
+  calSelectedType = type;
+  ['game','event','task'].forEach(t => {
+    const btn = document.getElementById('ctype-' + t);
+    if (btn) btn.className = 'cal-type-btn' + (t === type ? ' sel-' + t : '');
+  });
+  const venueRow = document.getElementById('cal-venue-row');
+  if (venueRow) venueRow.style.display = type === 'game' ? '' : 'none';
+  const houseRow = document.getElementById('cal-house-row');
+  if (houseRow) houseRow.style.display = type === 'game' ? '' : 'none';
+}
+
+function onVenueChange() {
+  const sel = document.getElementById('cal-event-venue');
+  const manual = document.getElementById('cal-event-location');
+  if (sel && manual) {
+    manual.style.display = sel.value === '__other__' ? '' : 'none';
+  }
+}
+
+function addCalEvent() {
+  const text = document.getElementById('cal-event-text').value.trim();
+  if (!text) return;
+  let location = '';
+  if (calSelectedType === 'game') {
+    const venueEl = document.getElementById('cal-event-venue');
+    const manualEl = document.getElementById('cal-event-location');
+    location = venueEl && venueEl.value && venueEl.value !== '__other__' 
+      ? venueEl.value 
+      : (manualEl ? manualEl.value.trim() : '');
+  } else {
+    const locEl = document.getElementById('cal-event-location');
+    location = locEl ? locEl.value.trim() : '';
+  }
+  if (!calEvents[calModalDate]) calEvents[calModalDate] = [];
+  const house = calSelectedType === 'game' ? (document.getElementById('cal-event-house')?.value || '') : '';
+  const category = calSelectedType === 'game' ? (document.getElementById('cal-event-category')?.value || '') : '';
+  calEvents[calModalDate].push({ type: calSelectedType, text, location, house, category });
+  saveCalEvents();
+  document.getElementById('cal-event-text').value = '';
+  document.getElementById('cal-event-location').value = '';
+  renderCalEventsList();
+  renderCalendar();
+  toast('אירוע נוסף ✓');
+}
+
+function deleteCalEvent(idx) {
+  if (!calEvents[calModalDate]) return;
+  calEvents[calModalDate].splice(idx, 1);
+  if (!calEvents[calModalDate].length) delete calEvents[calModalDate];
+  saveCalEvents();
+  renderCalEventsList();
+  renderCalendar();
+  toast('אירוע נמחק');
+}
+
+function closeCalModal(e) {
+  if (e && e.target !== document.getElementById('cal-modal')) return;
+  document.getElementById('cal-modal').classList.remove('open');
+}
+
+if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(() => {}); }
+
+loadArchive();
+loadCalEvents();
+loadSponsors();
+loadFromSupabase();
+setInterval(loadFromSupabase, 10000);
+setInterval(loadScheduleFromSupabase, 30000);
+</script>
+</body>
+</html>
+<!-- This marker will be replaced -->

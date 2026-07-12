@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EZ7 — בק אופיס ליגה</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --nv:#0B1D3A;--gd:#C9A227;--gdl:#E9D690;--bg:#F5F4F0;
+  --wh:#fff;--tx:#13203A;--mu:#6B7280;--br:#E2E0D8;
+  --ap:#1E7A4C;--pe:#2563EB;--wa:#D97706;--re:#DC2626;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Heebo',sans-serif;background:var(--bg);color:var(--tx);line-height:1.5;min-height:100vh;}
+header{background:var(--nv);padding:13px 20px;display:flex;align-items:center;gap:14px;}
+.bk{color:#AEB9CC;font-size:12px;text-decoration:none;}
+.bk:hover{color:var(--gdl);}
+.logo{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;color:var(--gd);border:2px solid var(--gd);padding:1px 8px;border-radius:4px;}
+header h1{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;color:#fff;}
+header p{font-size:11px;color:#AEB9CC;margin-top:1px;}
+.tabs{background:var(--nv);padding:0 20px;display:flex;gap:0;border-top:1px solid rgba(255,255,255,.1);}
+.tb{font-family:'Heebo',sans-serif;padding:11px 18px;font-size:13px;font-weight:500;color:#AEB9CC;cursor:pointer;border:none;background:none;border-bottom:3px solid transparent;transition:color .15s;}
+.tb:hover{color:#fff;}
+.tb.active{color:var(--gdl);border-bottom-color:var(--gd);}
+main{max-width:1100px;margin:0 auto;padding:18px 16px 60px;}
+.tp{display:none;}.tp.active{display:block;}
+.card{background:var(--wh);border:1px solid var(--br);border-radius:10px;padding:18px;margin-bottom:14px;}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.ch h2{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:600;color:var(--nv);}
+.ch p{font-size:12px;color:var(--mu);margin-top:2px;}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+input[type=text],input[type=number],input[type=tel],input[type=email],select,textarea{
+  font-family:'Heebo',sans-serif;border:1px solid var(--br);border-radius:5px;
+  padding:6px 8px;font-size:12px;color:var(--tx);background:var(--wh);}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gd);}
+.btn{font-family:'Heebo',sans-serif;border:1px solid var(--nv);background:var(--wh);color:var(--nv);border-radius:5px;padding:6px 13px;font-size:12px;font-weight:500;cursor:pointer;}
+.btn:hover{background:var(--nv);color:#fff;}
+.btn-pri{background:var(--nv);color:#fff;border-color:var(--nv);}
+.btn-pri:hover{background:#16315E;}
+.btn-sm{padding:4px 9px;font-size:11px;}
+.btn-gd{background:var(--gd);border-color:var(--gd);color:var(--nv);font-weight:700;}
+.btn-gd:hover{background:#A87E10;color:#fff;}
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+thead th{padding:8px 7px;font-weight:500;color:var(--mu);border-bottom:2px solid var(--nv);text-align:center;white-space:nowrap;background:var(--wh);}
+thead th:first-child{text-align:right;}
+td{padding:5px 7px;border-bottom:1px solid var(--br);text-align:center;vertical-align:middle;}
+td:first-child{text-align:right;}
+td input,td select{font-size:11px;padding:3px 5px;width:100%;}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;white-space:nowrap;}
+.b-none{background:#F3F4F6;color:#374151;}
+.b-neg{background:#DBEAFE;color:#1E40AF;}
+.b-sign{background:#D1FAE5;color:#065F46;}
+.b-pend{background:#FEF3C7;color:#92400E;}
+.b-conf{background:#D1FAE5;color:#065F46;}
+.b-play{background:#E0E7FF;color:#3730A3;}
+.b-canc{background:#FEE2E2;color:#991B1B;}
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px;}
+.stat{background:var(--nv);border-radius:8px;padding:12px 14px;}
+.stat .lb{font-size:10px;color:#AEB9CC;margin-bottom:3px;}
+.stat .vl{font-size:20px;font-weight:700;color:var(--gdl);font-family:'Barlow Condensed',sans-serif;}
+.stat .vl.ok{color:#7FE0AD;}.stat .vl.warn{color:#F0C46A;}.stat .vl.bad{color:#FCA5A5;}
+.filt{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;}
+.filt label{font-size:12px;color:var(--mu);font-weight:500;}
+.tmpl{background:#FAFAF7;border:1px solid var(--br);border-radius:8px;padding:16px;margin-bottom:12px;}
+.tmpl h3{font-size:14px;font-weight:600;color:var(--nv);margin-bottom:8px;}
+.tmpl textarea{width:100%;min-height:100px;font-size:12px;line-height:1.6;resize:vertical;}
+.copy-done{color:var(--ap);font-size:11px;margin-right:8px;display:none;}
+.pay-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--br);}
+.pay-row:last-child{border-bottom:none;}
+.round-tabs{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;}
+.rtb{font-family:'Heebo',sans-serif;border:1px solid var(--br);background:var(--wh);color:var(--mu);border-radius:5px;padding:6px 12px;font-size:12px;font-weight:500;cursor:pointer;}
+.rtb.active{background:var(--nv);color:#fff;border-color:var(--nv);}
+.dist-badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:8px;font-weight:500;}
+.db-d{background:#FEE2E2;color:#991B1B;}.db-n{background:#DBEAFE;color:#1E40AF;}
+.db-sh{background:#D1FAE5;color:#065F46;}.db-sr{background:#FEF3C7;color:#92400E;}
+.db-t{background:#E0E7FF;color:#3730A3;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;}
+.modal.show{display:flex;}
+.modal-box{background:var(--wh);border-radius:10px;padding:22px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;}
+.modal-box h3{font-size:15px;font-weight:700;color:var(--nv);margin-bottom:14px;}
+.form-row{margin-bottom:10px;}
+.form-row label{display:block;font-size:11px;color:var(--mu);font-weight:500;margin-bottom:3px;}
+.form-row input,.form-row select,.form-row textarea{width:100%;}
+.form-row textarea{min-height:60px;resize:vertical;}
+footer{text-align:center;font-size:11px;color:var(--mu);padding:12px;}
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="bk">← דשבורד</a>
+  <div class="logo">EZ7</div>
+  <div>
+    <h1>בק אופיס — EZ7 Padel Tour</h1>
+    <p>ניהול מועדונים · לוח עונה · תשלומים · תקשורת</p>
+  </div>
+</header>
+<div class="tabs">
+  <button class="tb active" id="tb0">🏢 מועדונים</button>
+  <button class="tb" id="tb1">📅 לוח עונה</button>
+  <button class="tb" id="tb2">💰 תשלומים</button>
+  <button class="tb" id="tb3">📤 תקשורת</button>
+</div>
+
+<main>
+
+<!-- ======= TAB 0: CLUBS ======= -->
+<div class="tp active" id="tp0">
+  <div class="card">
+    <div class="ch">
+      <div><h2>ניהול מועדונים</h2><p id="clubs-summary">טוען...</p></div>
+      <div class="row">
+        <input type="text" id="clubSearch" placeholder="חיפוש מועדון..." style="width:180px;">
+        <select id="clubDistFilter"><option value="">כל המחוזות</option></select>
+        <select id="clubContractFilter">
+          <option value="">כל הסטטוסים</option>
+          <option value="none">אין קשר</option>
+          <option value="negotiating">במו״מ</option>
+          <option value="signed">חוזה חתום</option>
+        </select>
+        <button class="btn btn-gd btn-sm" id="exportClubs">⬇ יצוא CSV</button>
+      </div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>מועדון</th><th>מחוז</th><th>מגרשים</th>
+          <th>איש קשר</th><th>טלפון</th><th>מייל</th>
+          <th>סטטוס חוזה</th><th>עלות/שעה (₪)</th><th>שעות/שבוע</th><th>הערות</th><th></th>
+        </tr></thead>
+        <tbody id="clubsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======= TAB 1: SEASON ======= -->
+<div class="tp" id="tp1">
+  <div class="card">
+    <div class="ch">
+      <div><h2>לוח עונה — 5 מחזורים × 40 בתים</h2><p>לחץ על תא לעדכון יום, שעה וסטטוס</p></div>
+      <div class="row">
+        <select id="seasDistFilter"><option value="">כל המחוזות</option></select>
+        <button class="btn btn-sm" id="setAllDay">קביעת יום לכולם</button>
+      </div>
+    </div>
+    <div class="round-tabs" id="roundTabs"></div>
+    <div class="stat-grid" id="seasonStats"></div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>#</th><th>מחוז</th><th>מועדון</th>
+          <th>יום</th><th>שעה</th><th>תאריך</th><th>סטטוס</th><th></th>
+        </tr></thead>
+        <tbody id="seasonBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======= TAB 2: PAYMENTS ======= -->
+<div class="tp" id="tp2">
+  <div class="stat-grid" id="payStats"></div>
+  <div class="card">
+    <div class="ch">
+      <div><h2>מעקב תשלומים למועדונים</h2></div>
+      <div class="row">
+        <select id="payDistFilter"><option value="">כל המחוזות</option></select>
+        <button class="btn btn-gd btn-sm" id="exportPay">⬇ יצוא CSV</button>
+      </div>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr>
+          <th>מועדון</th><th>מחוז</th><th>שעות/מחזור</th><th>מחיר/שעה</th>
+          <th>עלות מלאה (5 מחזורים)</th><th>שולם</th><th>יתרה</th><th>סטטוס</th><th></th>
+        </tr></thead>
+        <tbody id="payBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ======= TAB 3: COMMS ======= -->
+<div class="tp" id="tp3">
+  <div class="card">
+    <div class="ch"><div><h2>תבניות תקשורת</h2><p>ערכו, התאמו ועתיקו — לשחקנים, למועדונים ולשותפים</p></div></div>
+
+    <div class="tmpl">
+      <h3>📋 אישור מחזור למועדון</h3>
+      <div class="filt row" style="margin-bottom:8px;">
+        <label>מועדון:</label><select id="tClub" style="width:200px;"></select>
+        <label>מחזור:</label><select id="tRound"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        <button class="btn btn-sm" id="fillClubTmpl">מלא אוטומטי</button>
+      </div>
+      <textarea id="tmpl0"></textarea>
+      <div class="row" style="margin-top:6px;"><span class="copy-done" id="cd0">✓ הועתק!</span><button class="btn btn-sm" data-tmpl="0">העתק</button></div>
+    </div>
+
+    <div class="tmpl">
+      <h3>📅 לוז שבועי לשחקנים</h3>
+      <div class="filt row" style="margin-bottom:8px;">
+        <label>מחוז:</label><select id="tDistP" style="width:130px;"><option value="">כולם</option></select>
+        <label>מחזור:</label><select id="tRoundP"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        <button class="btn btn-sm" id="fillPlayerTmpl">מלא אוטומטי</button>
+      </div>
+      <textarea id="tmpl1"></textarea>
+      <div class="row" style="margin-top:6px;"><span class="copy-done" id="cd1">✓ הועתק!</span><button class="btn btn-sm" data-tmpl="1">העתק</button></div>
+    </div>
+
+    <div class="tmpl">
+      <h3>💰 תזכורת תשלום למועדון</h3>
+      <div class="filt row" style="margin-bottom:8px;">
+        <label>מועדון:</label><select id="tClubPay" style="width:200px;"></select>
+        <button class="btn btn-sm" id="fillPayTmpl">מלא אוטומטי</button>
+      </div>
+      <textarea id="tmpl2"></textarea>
+      <div class="row" style="margin-top:6px;"><span class="copy-done" id="cd2">✓ הועתק!</span><button class="btn btn-sm" data-tmpl="2">העתק</button></div>
+    </div>
+
+    <div class="tmpl">
+      <h3>🎾 ברוך הבא לליגה — לשחקנים</h3>
+      <textarea id="tmpl3"></textarea>
+      <div class="row" style="margin-top:6px;"><span class="copy-done" id="cd3">✓ הועתק!</span><button class="btn btn-sm" data-tmpl="3">העתק</button></div>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer>EZ7 Padel Tour — בק אופיס פנימי</footer>
+
+<!-- MODALS -->
+<div class="modal" id="modalClub">
+  <div class="modal-box">
+    <h3 id="modalClubTitle">עריכת מועדון</h3>
+    <div class="form-row"><label>שם</label><input type="text" id="mc-name" readonly style="background:#f3f4f6;"></div>
+    <div class="form-row"><label>איש קשר</label><input type="text" id="mc-contact"></div>
+    <div class="form-row"><label>טלפון</label><input type="tel" id="mc-phone"></div>
+    <div class="form-row"><label>מייל</label><input type="email" id="mc-email"></div>
+    <div class="form-row"><label>סטטוס חוזה</label>
+      <select id="mc-contract">
+        <option value="none">אין קשר</option>
+        <option value="negotiating">במו״מ</option>
+        <option value="signed">חוזה חתום</option>
+      </select>
+    </div>
+    <div class="form-row"><label>עלות לשעת מגרש (₪)</label><input type="number" id="mc-rate" min="0" step="50"></div>
+    <div class="form-row"><label>הערות</label><textarea id="mc-notes"></textarea></div>
+    <div class="row" style="margin-top:12px;">
+      <button class="btn btn-pri" id="mc-save">שמור</button>
+      <button class="btn" id="mc-cancel">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalSched">
+  <div class="modal-box">
+    <h3 id="msTitle">עדכון מחזור</h3>
+    <div class="form-row"><label>מועדון</label><select id="ms-club" style="width:100%;"></select></div>
+    <div class="form-row"><label>יום</label>
+      <select id="ms-day">
+        <option>ראשון</option><option>שני</option><option selected>שלישי</option>
+        <option>רביעי</option><option>חמישי</option><option>שישי</option>
+      </select>
+    </div>
+    <div class="form-row"><label>שעה</label><input type="text" id="ms-time" value="18:00"></div>
+    <div class="form-row"><label>תאריך (אופציונלי)</label><input type="text" id="ms-date" placeholder="למשל 15.01.2025"></div>
+    <div class="form-row"><label>סטטוס</label>
+      <select id="ms-status">
+        <option value="pending">ממתין</option>
+        <option value="confirmed">מאושר</option>
+        <option value="played">שוחק</option>
+        <option value="cancelled">בוטל</option>
+      </select>
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <button class="btn btn-pri" id="ms-save">שמור</button>
+      <button class="btn" id="ms-cancel">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalPay">
+  <div class="modal-box">
+    <h3 id="mpTitle">רישום תשלום</h3>
+    <div class="form-row"><label>מועדון</label><input type="text" id="mp-name" readonly style="background:#f3f4f6;"></div>
+    <div class="form-row"><label>סכום ששולם (₪)</label><input type="number" id="mp-amount" min="0" step="100"></div>
+    <div class="form-row"><label>תאריך תשלום</label><input type="text" id="mp-date" placeholder="15.01.2025"></div>
+    <div class="form-row"><label>אמצעי תשלום</label>
+      <select id="mp-method"><option>העברה בנקאית</option><option>המחאה</option><option>מזומן</option><option>אחר</option></select>
+    </div>
+    <div class="form-row"><label>הערות</label><textarea id="mp-notes"></textarea></div>
+    <div class="row" style="margin-top:12px;">
+      <button class="btn btn-pri" id="mp-save">שמור תשלום</button>
+      <button class="btn" id="mp-cancel">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- DATA -->
+<script type="application/json" id="initData">{"clubs": [{"id": "ירושלים – מרכז לרנר ", "name": "ירושלים – מרכז לרנר (טופ פאדל)", "district": "דרום", "courts": 6, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "מודיעין - מכבים קלאב", "name": "מודיעין - מכבים קלאב (מכבים קלאב)", "district": "דרום", "courts": 6, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "אשדוד (פאדליה)", "name": "אשדוד (פאדליה)", "district": "דרום", "courts": 5, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "ירושלים (מועדון הפאד", "name": "ירושלים (מועדון הפאדל)", "district": "דרום", "courts": 5, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "אילת (האקדמיה לפאדל)", "name": "אילת (האקדמיה לפאדל)", "district": "דרום", "courts": 3, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "באר שבע (פאדל קלאב)", "name": "באר שבע (פאדל קלאב)", "district": "דרום", "courts": 3, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "אופקים", "name": "אופקים", "district": "דרום", "courts": 3, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "באר שבע (מרכז הטניס)", "name": "באר שבע (מרכז הטניס)", "district": "דרום", "courts": 3, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "ירושלים – מרכז הטניס", "name": "ירושלים – מרכז הטניס (מרכז הטניס)", "district": "דרום", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "שדרות (טוטאל פאדל)", "name": "שדרות (טוטאל פאדל)", "district": "דרום", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "נשר (פאדלנט)", "name": "נשר (פאדלנט)", "district": "צפון", "courts": 7, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 6, "notes": ""}, {"id": "נהריה (SeeClub)", "name": "נהריה (SeeClub)", "district": "צפון", "courts": 7, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 6, "notes": ""}, {"id": "קיסריה (פאדל ישראל)", "name": "קיסריה (פאדל ישראל)", "district": "צפון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "טבריה (פאדל טיים)", "name": "טבריה (פאדל טיים)", "district": "צפון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "גינוסר (פאדל קלאב)", "name": "גינוסר (פאדל קלאב)", "district": "צפון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "חיפה (מרכז הטניס)", "name": "חיפה (מרכז הטניס)", "district": "צפון", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "חדרה (TERO)", "name": "חדרה (TERO)", "district": "צפון", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "קיסריה מרכז העסקים (", "name": "קיסריה מרכז העסקים (פאדל ישראל)", "district": "צפון", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "מגדל העמק (מרכז הטני", "name": "מגדל העמק (מרכז הטניס)", "district": "צפון", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "ראשון לציון (פאדל סנ", "name": "ראשון לציון (פאדל סנטר)", "district": "שפלה", "courts": 8, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "חולון – פאדל טיים (פ", "name": "חולון – פאדל טיים (פאדל טיים)", "district": "שפלה", "courts": 8, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "ראשון לציון (פאדל יש", "name": "ראשון לציון (פאדל ישראל)", "district": "שפלה", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "רחובות – פאדל טיים (", "name": "רחובות – פאדל טיים (פאדל טיים)", "district": "שפלה", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "רחובות – פאדל ישראל ", "name": "רחובות – פאדל ישראל (פאדל ישראל)", "district": "שפלה", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "יבנה – פאדל טיים (פא", "name": "יבנה – פאדל טיים (פאדל טיים)", "district": "שפלה", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "רחובות – פקולטה (גיי", "name": "רחובות – פקולטה (גיים טיים)", "district": "שפלה", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "ראשון לציון (סמאש פא", "name": "ראשון לציון (סמאש פאדל)", "district": "שפלה", "courts": 3, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "נס ציונה – קאנטרי (מ", "name": "נס ציונה – קאנטרי (מרכז הטניס)", "district": "שפלה", "courts": 3, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "רעננה (פאדל טיים)", "name": "רעננה (פאדל טיים)", "district": "שרון", "courts": 7, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "רמת השרון (מרכז הטני", "name": "רמת השרון (מרכז הטניס)", "district": "שרון", "courts": 6, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "הרצליה (סטיל טניס)", "name": "הרצליה (סטיל טניס)", "district": "שרון", "courts": 5, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "הרצליה (טופ פאדל)", "name": "הרצליה (טופ פאדל)", "district": "שרון", "courts": 5, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "נתניה פולג (טופ פאדל", "name": "נתניה פולג (טופ פאדל)", "district": "שרון", "courts": 5, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "פתח תקווה (פאדל ישרא", "name": "פתח תקווה (פאדל ישראל)", "district": "שרון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "כפר סבא (פאדל ישראל)", "name": "כפר סבא (פאדל ישראל)", "district": "שרון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "נתניה עיר ימים (טופ ", "name": "נתניה עיר ימים (טופ פאדל)", "district": "שרון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "כפר סבא (קאנטרי)", "name": "כפר סבא (קאנטרי)", "district": "שרון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "בית ברל (האוס פאדל)", "name": "בית ברל (האוס פאדל)", "district": "שרון", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "בני ציון (סמאש פוינט", "name": "בני ציון (סמאש פוינט)", "district": "שרון", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "כוכב יאיר (מרכז הטני", "name": "כוכב יאיר (מרכז הטניס)", "district": "שרון", "courts": 1, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "רמת גן – כפר המכביה ", "name": "רמת גן – כפר המכביה (פאדל ישראל)", "district": "תל אביב", "courts": 8, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 6, "notes": ""}, {"id": "תל אביב (TERO)", "name": "תל אביב (TERO)", "district": "תל אביב", "courts": 6, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "סביון (איי פאדל)", "name": "סביון (איי פאדל)", "district": "תל אביב", "courts": 6, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "רמת גן הפארק הלאומי ", "name": "רמת גן הפארק הלאומי (פאדליר)", "district": "תל אביב", "courts": 6, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "סביון (טופ פאדל)", "name": "סביון (טופ פאדל)", "district": "תל אביב", "courts": 5, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "תל אביב - קאנטרי דקל", "name": "תל אביב - קאנטרי דקל (פאדל טיים)", "district": "תל אביב", "courts": 4, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 3, "notes": ""}, {"id": "תל אביב – אוניברסיטה", "name": "תל אביב – אוניברסיטה (פאדל ישראל)", "district": "תל אביב", "courts": 2, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}, {"id": "גבעת שמואל (פאדל טיי", "name": "גבעת שמואל (פאדל טיים)", "district": "ישראל", "courts": 0, "contact": "", "phone": "", "email": "", "contract": "none", "rate": 0, "weekly_hours": 0, "notes": ""}], "houses": [{"id": 1, "district": "דרום", "club": "ירושלים – מרכז לרנר (טופ פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 2, "district": "דרום", "club": "מודיעין - מכבים קלאב (מכבים קלאב)", "pairs": ["", "", "", "", "", ""]}, {"id": 3, "district": "דרום", "club": "אשדוד (פאדליה)", "pairs": ["", "", "", "", "", ""]}, {"id": 4, "district": "דרום", "club": "ירושלים (מועדון הפאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 5, "district": "דרום", "club": "אילת (האקדמיה לפאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 6, "district": "דרום", "club": "באר שבע (פאדל קלאב)", "pairs": ["", "", "", "", "", ""]}, {"id": 7, "district": "דרום", "club": "אופקים", "pairs": ["", "", "", "", "", ""]}, {"id": 8, "district": "דרום", "club": "באר שבע (מרכז הטניס)", "pairs": ["", "", "", "", "", ""]}, {"id": 9, "district": "צפון", "club": "נשר (פאדלנט)", "pairs": ["", "", "", "", "", ""]}, {"id": 10, "district": "צפון", "club": "נהריה (SeeClub)", "pairs": ["", "", "", "", "", ""]}, {"id": 11, "district": "צפון", "club": "קיסריה (פאדל ישראל)", "pairs": ["", "", "", "", "", ""]}, {"id": 12, "district": "צפון", "club": "טבריה (פאדל טיים)", "pairs": ["", "", "", "", "", ""]}, {"id": 13, "district": "צפון", "club": "גינוסר (פאדל קלאב)", "pairs": ["", "", "", "", "", ""]}, {"id": 14, "district": "צפון", "club": "חיפה (מרכז הטניס)", "pairs": ["", "", "", "", "", ""]}, {"id": 15, "district": "צפון", "club": "חדרה (TERO)", "pairs": ["", "", "", "", "", ""]}, {"id": 16, "district": "שפלה", "club": "ראשון לציון (פאדל סנטר)", "pairs": ["", "", "", "", "", ""]}, {"id": 17, "district": "שפלה", "club": "חולון – פאדל טיים (פאדל טיים)", "pairs": ["", "", "", "", "", ""]}, {"id": 18, "district": "שפלה", "club": "ראשון לציון (פאדל ישראל)", "pairs": ["", "", "", "", "", ""]}, {"id": 19, "district": "שפלה", "club": "רחובות – פאדל טיים (פאדל טיים)", "pairs": ["", "", "", "", "", ""]}, {"id": 20, "district": "שפלה", "club": "רחובות – פאדל ישראל (פאדל ישראל)", "pairs": ["", "", "", "", "", ""]}, {"id": 21, "district": "שפלה", "club": "יבנה – פאדל טיים (פאדל טיים)", "pairs": ["", "", "", "", "", ""]}, {"id": 22, "district": "שפלה", "club": "רחובות – פקולטה (גיים טיים)", "pairs": ["", "", "", "", "", ""]}, {"id": 23, "district": "שפלה", "club": "ראשון לציון (סמאש פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 24, "district": "שרון", "club": "רעננה (פאדל טיים)", "pairs": ["", "", "", "", "", ""]}, {"id": 25, "district": "שרון", "club": "רמת השרון (מרכז הטניס)", "pairs": ["", "", "", "", "", ""]}, {"id": 26, "district": "שרון", "club": "הרצליה (סטיל טניס)", "pairs": ["", "", "", "", "", ""]}, {"id": 27, "district": "שרון", "club": "הרצליה (טופ פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 28, "district": "שרון", "club": "נתניה פולג (טופ פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 29, "district": "שרון", "club": "פתח תקווה (פאדל ישראל)", "pairs": ["", "", "", "", "", ""]}, {"id": 30, "district": "שרון", "club": "כפר סבא (פאדל ישראל)", "pairs": ["", "", "", "", "", ""]}, {"id": 31, "district": "שרון", "club": "נתניה עיר ימים (טופ פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 32, "district": "שרון", "club": "כפר סבא (קאנטרי)", "pairs": ["", "", "", "", "", ""]}, {"id": 33, "district": "שרון", "club": "בית ברל (האוס פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 34, "district": "תל אביב", "club": "רמת גן – כפר המכביה (פאדל ישראל)", "pairs": ["", "", "", "", "", ""]}, {"id": 35, "district": "תל אביב", "club": "תל אביב (TERO)", "pairs": ["", "", "", "", "", ""]}, {"id": 36, "district": "תל אביב", "club": "סביון (איי פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 37, "district": "תל אביב", "club": "רמת גן הפארק הלאומי (פאדליר)", "pairs": ["", "", "", "", "", ""]}, {"id": 38, "district": "תל אביב", "club": "סביון (טופ פאדל)", "pairs": ["", "", "", "", "", ""]}, {"id": 39, "district": "תל אביב", "club": "תל אביב - קאנטרי דקל (פאדל טיים)", "pairs": ["", "", "", "", "", ""]}, {"id": 40, "district": "תל אביב", "club": "תל אביב – אוניברסיטה (פאדל ישראל)", "pairs": ["", "", "", "", "", ""]}], "schedule": [{"house_id": 1, "round": 1, "club": "ירושלים – מרכז לרנר (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 2, "round": 1, "club": "מודיעין - מכבים קלאב (מכבים קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 3, "round": 1, "club": "אשדוד (פאדליה)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 4, "round": 1, "club": "ירושלים (מועדון הפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 5, "round": 1, "club": "אילת (האקדמיה לפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 6, "round": 1, "club": "באר שבע (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 7, "round": 1, "club": "אופקים", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 8, "round": 1, "club": "באר שבע (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 9, "round": 1, "club": "נשר (פאדלנט)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 10, "round": 1, "club": "נהריה (SeeClub)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 11, "round": 1, "club": "קיסריה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 12, "round": 1, "club": "טבריה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 13, "round": 1, "club": "גינוסר (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 14, "round": 1, "club": "חיפה (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 15, "round": 1, "club": "חדרה (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 16, "round": 1, "club": "ראשון לציון (פאדל סנטר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 17, "round": 1, "club": "חולון – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 18, "round": 1, "club": "ראשון לציון (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 19, "round": 1, "club": "רחובות – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 20, "round": 1, "club": "רחובות – פאדל ישראל (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 21, "round": 1, "club": "יבנה – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 22, "round": 1, "club": "רחובות – פקולטה (גיים טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 23, "round": 1, "club": "ראשון לציון (סמאש פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 24, "round": 1, "club": "רעננה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 25, "round": 1, "club": "רמת השרון (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 26, "round": 1, "club": "הרצליה (סטיל טניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 27, "round": 1, "club": "הרצליה (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 28, "round": 1, "club": "נתניה פולג (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 29, "round": 1, "club": "פתח תקווה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 30, "round": 1, "club": "כפר סבא (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 31, "round": 1, "club": "נתניה עיר ימים (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 32, "round": 1, "club": "כפר סבא (קאנטרי)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 33, "round": 1, "club": "בית ברל (האוס פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 34, "round": 1, "club": "רמת גן – כפר המכביה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 35, "round": 1, "club": "תל אביב (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 36, "round": 1, "club": "סביון (איי פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 37, "round": 1, "club": "רמת גן הפארק הלאומי (פאדליר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 38, "round": 1, "club": "סביון (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 39, "round": 1, "club": "תל אביב - קאנטרי דקל (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 40, "round": 1, "club": "תל אביב – אוניברסיטה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 1, "round": 2, "club": "ירושלים – מרכז לרנר (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 2, "round": 2, "club": "מודיעין - מכבים קלאב (מכבים קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 3, "round": 2, "club": "אשדוד (פאדליה)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 4, "round": 2, "club": "ירושלים (מועדון הפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 5, "round": 2, "club": "אילת (האקדמיה לפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 6, "round": 2, "club": "באר שבע (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 7, "round": 2, "club": "אופקים", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 8, "round": 2, "club": "באר שבע (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 9, "round": 2, "club": "נשר (פאדלנט)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 10, "round": 2, "club": "נהריה (SeeClub)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 11, "round": 2, "club": "קיסריה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 12, "round": 2, "club": "טבריה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 13, "round": 2, "club": "גינוסר (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 14, "round": 2, "club": "חיפה (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 15, "round": 2, "club": "חדרה (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 16, "round": 2, "club": "ראשון לציון (פאדל סנטר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 17, "round": 2, "club": "חולון – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 18, "round": 2, "club": "ראשון לציון (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 19, "round": 2, "club": "רחובות – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 20, "round": 2, "club": "רחובות – פאדל ישראל (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 21, "round": 2, "club": "יבנה – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 22, "round": 2, "club": "רחובות – פקולטה (גיים טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 23, "round": 2, "club": "ראשון לציון (סמאש פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 24, "round": 2, "club": "רעננה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 25, "round": 2, "club": "רמת השרון (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 26, "round": 2, "club": "הרצליה (סטיל טניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 27, "round": 2, "club": "הרצליה (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 28, "round": 2, "club": "נתניה פולג (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 29, "round": 2, "club": "פתח תקווה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 30, "round": 2, "club": "כפר סבא (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 31, "round": 2, "club": "נתניה עיר ימים (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 32, "round": 2, "club": "כפר סבא (קאנטרי)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 33, "round": 2, "club": "בית ברל (האוס פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 34, "round": 2, "club": "רמת גן – כפר המכביה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 35, "round": 2, "club": "תל אביב (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 36, "round": 2, "club": "סביון (איי פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 37, "round": 2, "club": "רמת גן הפארק הלאומי (פאדליר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 38, "round": 2, "club": "סביון (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 39, "round": 2, "club": "תל אביב - קאנטרי דקל (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 40, "round": 2, "club": "תל אביב – אוניברסיטה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 1, "round": 3, "club": "ירושלים – מרכז לרנר (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 2, "round": 3, "club": "מודיעין - מכבים קלאב (מכבים קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 3, "round": 3, "club": "אשדוד (פאדליה)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 4, "round": 3, "club": "ירושלים (מועדון הפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 5, "round": 3, "club": "אילת (האקדמיה לפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 6, "round": 3, "club": "באר שבע (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 7, "round": 3, "club": "אופקים", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 8, "round": 3, "club": "באר שבע (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 9, "round": 3, "club": "נשר (פאדלנט)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 10, "round": 3, "club": "נהריה (SeeClub)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 11, "round": 3, "club": "קיסריה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 12, "round": 3, "club": "טבריה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 13, "round": 3, "club": "גינוסר (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 14, "round": 3, "club": "חיפה (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 15, "round": 3, "club": "חדרה (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 16, "round": 3, "club": "ראשון לציון (פאדל סנטר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 17, "round": 3, "club": "חולון – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 18, "round": 3, "club": "ראשון לציון (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 19, "round": 3, "club": "רחובות – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 20, "round": 3, "club": "רחובות – פאדל ישראל (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 21, "round": 3, "club": "יבנה – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 22, "round": 3, "club": "רחובות – פקולטה (גיים טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 23, "round": 3, "club": "ראשון לציון (סמאש פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 24, "round": 3, "club": "רעננה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 25, "round": 3, "club": "רמת השרון (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 26, "round": 3, "club": "הרצליה (סטיל טניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 27, "round": 3, "club": "הרצליה (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 28, "round": 3, "club": "נתניה פולג (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 29, "round": 3, "club": "פתח תקווה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 30, "round": 3, "club": "כפר סבא (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 31, "round": 3, "club": "נתניה עיר ימים (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 32, "round": 3, "club": "כפר סבא (קאנטרי)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 33, "round": 3, "club": "בית ברל (האוס פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 34, "round": 3, "club": "רמת גן – כפר המכביה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 35, "round": 3, "club": "תל אביב (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 36, "round": 3, "club": "סביון (איי פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 37, "round": 3, "club": "רמת גן הפארק הלאומי (פאדליר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 38, "round": 3, "club": "סביון (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 39, "round": 3, "club": "תל אביב - קאנטרי דקל (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 40, "round": 3, "club": "תל אביב – אוניברסיטה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 1, "round": 4, "club": "ירושלים – מרכז לרנר (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 2, "round": 4, "club": "מודיעין - מכבים קלאב (מכבים קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 3, "round": 4, "club": "אשדוד (פאדליה)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 4, "round": 4, "club": "ירושלים (מועדון הפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 5, "round": 4, "club": "אילת (האקדמיה לפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 6, "round": 4, "club": "באר שבע (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 7, "round": 4, "club": "אופקים", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 8, "round": 4, "club": "באר שבע (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 9, "round": 4, "club": "נשר (פאדלנט)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 10, "round": 4, "club": "נהריה (SeeClub)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 11, "round": 4, "club": "קיסריה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 12, "round": 4, "club": "טבריה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 13, "round": 4, "club": "גינוסר (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 14, "round": 4, "club": "חיפה (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 15, "round": 4, "club": "חדרה (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 16, "round": 4, "club": "ראשון לציון (פאדל סנטר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 17, "round": 4, "club": "חולון – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 18, "round": 4, "club": "ראשון לציון (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 19, "round": 4, "club": "רחובות – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 20, "round": 4, "club": "רחובות – פאדל ישראל (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 21, "round": 4, "club": "יבנה – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 22, "round": 4, "club": "רחובות – פקולטה (גיים טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 23, "round": 4, "club": "ראשון לציון (סמאש פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 24, "round": 4, "club": "רעננה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 25, "round": 4, "club": "רמת השרון (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 26, "round": 4, "club": "הרצליה (סטיל טניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 27, "round": 4, "club": "הרצליה (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 28, "round": 4, "club": "נתניה פולג (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 29, "round": 4, "club": "פתח תקווה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 30, "round": 4, "club": "כפר סבא (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 31, "round": 4, "club": "נתניה עיר ימים (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 32, "round": 4, "club": "כפר סבא (קאנטרי)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 33, "round": 4, "club": "בית ברל (האוס פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 34, "round": 4, "club": "רמת גן – כפר המכביה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 35, "round": 4, "club": "תל אביב (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 36, "round": 4, "club": "סביון (איי פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 37, "round": 4, "club": "רמת גן הפארק הלאומי (פאדליר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 38, "round": 4, "club": "סביון (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 39, "round": 4, "club": "תל אביב - קאנטרי דקל (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 40, "round": 4, "club": "תל אביב – אוניברסיטה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 1, "round": 5, "club": "ירושלים – מרכז לרנר (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 2, "round": 5, "club": "מודיעין - מכבים קלאב (מכבים קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 3, "round": 5, "club": "אשדוד (פאדליה)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 4, "round": 5, "club": "ירושלים (מועדון הפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 5, "round": 5, "club": "אילת (האקדמיה לפאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 6, "round": 5, "club": "באר שבע (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 7, "round": 5, "club": "אופקים", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 8, "round": 5, "club": "באר שבע (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 9, "round": 5, "club": "נשר (פאדלנט)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 10, "round": 5, "club": "נהריה (SeeClub)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 11, "round": 5, "club": "קיסריה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 12, "round": 5, "club": "טבריה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 13, "round": 5, "club": "גינוסר (פאדל קלאב)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 14, "round": 5, "club": "חיפה (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 15, "round": 5, "club": "חדרה (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 16, "round": 5, "club": "ראשון לציון (פאדל סנטר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 17, "round": 5, "club": "חולון – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 18, "round": 5, "club": "ראשון לציון (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 19, "round": 5, "club": "רחובות – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 20, "round": 5, "club": "רחובות – פאדל ישראל (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 21, "round": 5, "club": "יבנה – פאדל טיים (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 22, "round": 5, "club": "רחובות – פקולטה (גיים טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 23, "round": 5, "club": "ראשון לציון (סמאש פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 24, "round": 5, "club": "רעננה (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 25, "round": 5, "club": "רמת השרון (מרכז הטניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 26, "round": 5, "club": "הרצליה (סטיל טניס)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 27, "round": 5, "club": "הרצליה (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 28, "round": 5, "club": "נתניה פולג (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 29, "round": 5, "club": "פתח תקווה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 30, "round": 5, "club": "כפר סבא (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 31, "round": 5, "club": "נתניה עיר ימים (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 32, "round": 5, "club": "כפר סבא (קאנטרי)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 33, "round": 5, "club": "בית ברל (האוס פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 34, "round": 5, "club": "רמת גן – כפר המכביה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 35, "round": 5, "club": "תל אביב (TERO)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 36, "round": 5, "club": "סביון (איי פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 37, "round": 5, "club": "רמת גן הפארק הלאומי (פאדליר)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 38, "round": 5, "club": "סביון (טופ פאדל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 39, "round": 5, "club": "תל אביב - קאנטרי דקל (פאדל טיים)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}, {"house_id": 40, "round": 5, "club": "תל אביב – אוניברסיטה (פאדל ישראל)", "day": "שלישי", "date": "", "time": "18:00", "status": "pending"}], "payments": []}</script>
+
+<script>
+/* ===== DATA ===== */
+var INIT = JSON.parse(document.getElementById('initData').textContent);
+var KEY  = 'ez7-backoffice-v1';
+
+function loadData() {
+  try {
+    var saved = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (saved && saved.clubs && saved.clubs.length === INIT.clubs.length) return saved;
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(INIT)); // deep clone
+}
+function saveData() { try { localStorage.setItem(KEY, JSON.stringify(D)); } catch(e) {} }
+
+var D = loadData();
+
+/* ===== HELPERS ===== */
+function ge(id) { return document.getElementById(id); }
+function fmt(n) { return Number(n||0).toLocaleString('he-IL'); }
+var DIST_CLASS = {'דרום':'db-d','צפון':'db-n','שפלה':'db-sh','שרון':'db-sr','תל אביב':'db-t'};
+var CONTRACT_LABELS = {none:'אין קשר', negotiating:'במו״מ', signed:'חוזה חתום'};
+var CONTRACT_BADGE  = {none:'b-none', negotiating:'b-neg', signed:'b-sign'};
+var STATUS_LABELS   = {pending:'ממתין', confirmed:'מאושר', played:'שוחק', cancelled:'בוטל'};
+var STATUS_BADGE    = {pending:'b-pend', confirmed:'b-conf', played:'b-play', cancelled:'b-canc'};
+var DISTS = ['דרום','צפון','שפלה','שרון','תל אביב'];
+
+/* ===== TABS ===== */
+var activeTab = 0;
+function switchTab(i) {
+  [0,1,2,3].forEach(function(j) {
+    ge('tb'+j).classList.toggle('active', j===i);
+    ge('tp'+j).classList.toggle('active', j===i);
+  });
+  activeTab = i;
+  if (i===0) renderClubs();
+  if (i===1) renderSeason();
+  if (i===2) renderPayments();
+  if (i===3) renderComms();
+}
+[0,1,2,3].forEach(function(i) {
+  ge('tb'+i).addEventListener('click', function() { switchTab(i); });
+});
+
+/* ===== POPULATE FILTERS ===== */
+function fillDistFilters() {
+  ['clubDistFilter','seasDistFilter','payDistFilter','tDistP'].forEach(function(id) {
+    var el = ge(id); if (!el) return;
+    var hasAll = el.options[0] && el.options[0].value === '';
+    if (!hasAll) el.add(new Option('כל המחוזות',''));
+    DISTS.forEach(function(d) {
+      if (![].slice.call(el.options).find(function(o){return o.value===d;}))
+        el.add(new Option('מחוז '+d, d));
+    });
+  });
+  // club selects for comms
+  var clubs = D.clubs.filter(function(c){return c.contract==='signed'||c.contract==='negotiating';});
+  ['tClub','tClubPay','ms-club','modalSched'].forEach(function(id){});
+  ['tClub','tClubPay'].forEach(function(id) {
+    var el = ge(id); if(!el) return; el.innerHTML = '';
+    D.clubs.forEach(function(c) { el.add(new Option(c.name, c.name)); });
+  });
+}
+
+/* ===== TAB 0: CLUBS ===== */
+var editingClub = null;
+
+function renderClubs() {
+  var search = (ge('clubSearch').value||'').toLowerCase();
+  var dist   = ge('clubDistFilter').value;
+  var cstat  = ge('clubContractFilter').value;
+  var total  = D.clubs.length;
+  var signed = D.clubs.filter(function(c){return c.contract==='signed';}).length;
+  var neg    = D.clubs.filter(function(c){return c.contract==='negotiating';}).length;
+  ge('clubs-summary').textContent = total+' מועדונים · '+signed+' חתמו · '+neg+' במו״מ';
+
+  var rows = D.clubs.filter(function(c) {
+    if (dist && c.district!==dist) return false;
+    if (cstat && c.contract!==cstat) return false;
+    if (search && !c.name.toLowerCase().includes(search) && !c.district.includes(search)) return false;
+    return true;
+  });
+
+  var tbody = ge('clubsBody'); tbody.innerHTML = '';
+  rows.forEach(function(c) {
+    var tr = document.createElement('tr');
+    var distCls = DIST_CLASS[c.district]||'';
+    tr.innerHTML = [
+      '<td><strong>'+c.name+'</strong></td>',
+      '<td><span class="badge dist-badge '+distCls+'">'+c.district+'</span></td>',
+      '<td>'+c.courts+'</td>',
+      '<td>'+(c.contact||'—')+'</td>',
+      '<td>'+(c.phone||'—')+'</td>',
+      '<td>'+(c.email||'—')+'</td>',
+      '<td><span class="badge '+CONTRACT_BADGE[c.contract]+'">'+CONTRACT_LABELS[c.contract]+'</span></td>',
+      '<td>'+(c.rate?fmt(c.rate)+' ₪':'—')+'</td>',
+      '<td>'+(c.weekly_hours||'—')+'</td>',
+      '<td style="max-width:120px;font-size:11px;color:var(--mu)">'+(c.notes||'—')+'</td>',
+      '<td><button class="btn btn-sm" data-edit="'+c.name+'">✎ ערוך</button></td>'
+    ].join('');
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('[data-edit]').forEach(function(btn) {
+    btn.addEventListener('click', function() { openClubModal(btn.getAttribute('data-edit')); });
+  });
+}
+
+function openClubModal(name) {
+  var c = D.clubs.find(function(x){return x.name===name;}); if(!c) return;
+  editingClub = name;
+  ge('mc-name').value    = c.name;
+  ge('mc-contact').value = c.contact||'';
+  ge('mc-phone').value   = c.phone||'';
+  ge('mc-email').value   = c.email||'';
+  ge('mc-contract').value= c.contract||'none';
+  ge('mc-rate').value    = c.rate||'';
+  ge('mc-notes').value   = c.notes||'';
+  ge('modalClub').classList.add('show');
+}
+ge('mc-save').addEventListener('click', function() {
+  var c = D.clubs.find(function(x){return x.name===editingClub;}); if(!c) return;
+  c.contact  = ge('mc-contact').value;
+  c.phone    = ge('mc-phone').value;
+  c.email    = ge('mc-email').value;
+  c.contract = ge('mc-contract').value;
+  c.rate     = parseFloat(ge('mc-rate').value)||0;
+  c.notes    = ge('mc-notes').value;
+  saveData(); ge('modalClub').classList.remove('show'); renderClubs(); fillDistFilters();
+});
+ge('mc-cancel').addEventListener('click', function() { ge('modalClub').classList.remove('show'); });
+ge('clubSearch').addEventListener('input', renderClubs);
+ge('clubDistFilter').addEventListener('change', renderClubs);
+ge('clubContractFilter').addEventListener('change', renderClubs);
+ge('exportClubs').addEventListener('click', function() {
+  var rows = [['מועדון','מחוז','מגרשים','איש קשר','טלפון','מייל','חוזה','מחיר/שעה','שעות/שבוע','הערות']];
+  D.clubs.forEach(function(c) { rows.push([c.name,c.district,c.courts,c.contact,c.phone,c.email,CONTRACT_LABELS[c.contract],c.rate,c.weekly_hours,c.notes]); });
+  downloadCSV(rows, 'ez7-clubs.csv');
+});
+
+/* ===== TAB 1: SEASON ===== */
+var curRound = 1;
+var editingSched = null;
+
+function renderRoundTabs() {
+  var rt = ge('roundTabs'); rt.innerHTML = '';
+  [1,2,3,4,5].forEach(function(r) {
+    var btn = document.createElement('button');
+    btn.className = 'rtb' + (r===curRound?' active':'');
+    btn.textContent = 'מחזור '+r;
+    btn.addEventListener('click', function() { curRound=r; renderSeason(); });
+    rt.appendChild(btn);
+  });
+}
+
+function renderSeason() {
+  renderRoundTabs();
+  var dist  = ge('seasDistFilter').value;
+  var items = D.schedule.filter(function(s){ return s.round===curRound && (!dist||D.houses.find(function(h){return h.id===s.house_id&&h.district===dist;})); });
+
+  var played    = items.filter(function(s){return s.status==='played';}).length;
+  var confirmed = items.filter(function(s){return s.status==='confirmed';}).length;
+  var pending   = items.filter(function(s){return s.status==='pending';}).length;
+  ge('seasonStats').innerHTML = [
+    '<div class="stat"><div class="lb">בתים במחזור</div><div class="vl">'+items.length+'</div></div>',
+    '<div class="stat"><div class="lb">מאושרים</div><div class="vl ok">'+confirmed+'</div></div>',
+    '<div class="stat"><div class="lb">ממתינים</div><div class="vl warn">'+pending+'</div></div>',
+    '<div class="stat"><div class="lb">שוחקו</div><div class="vl" style="color:#A5B4FC">'+played+'</div></div>'
+  ].join('');
+
+  var tbody = ge('seasonBody'); tbody.innerHTML = '';
+  items.forEach(function(s) {
+    var h = D.houses.find(function(x){return x.id===s.house_id;});
+    if (!h) return;
+    var distCls = DIST_CLASS[h.district]||'';
+    var tr = document.createElement('tr');
+    tr.innerHTML = [
+      '<td style="font-weight:600">'+s.house_id+'</td>',
+      '<td><span class="badge dist-badge '+distCls+'">'+h.district+'</span></td>',
+      '<td style="font-size:11px;max-width:160px">'+s.club+'</td>',
+      '<td>'+s.day+'</td>',
+      '<td>'+s.time+'</td>',
+      '<td style="font-size:11px">'+(s.date||'—')+'</td>',
+      '<td><span class="badge '+STATUS_BADGE[s.status]+'">'+STATUS_LABELS[s.status]+'</span></td>',
+      '<td><button class="btn btn-sm" data-sh="'+s.house_id+'" data-sr="'+s.round+'">✎</button></td>'
+    ].join('');
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll('[data-sh]').forEach(function(btn) {
+    btn.addEventListener('click', function() { openSchedModal(parseInt(btn.getAttribute('data-sh')), parseInt(btn.getAttribute('data-sr'))); });
+  });
+}
+
+function openSchedModal(hid, round) {
+  var s = D.schedule.find(function(x){return x.house_id===hid&&x.round===round;}); if(!s) return;
+  editingSched = {hid:hid, round:round};
+  var h = D.houses.find(function(x){return x.id===hid;})||{};
+  ge('msTitle').textContent = 'בית '+hid+' · מחזור '+round+' · '+h.district;
+  // fill club select
+  var sel = ge('ms-club'); sel.innerHTML = '';
+  D.clubs.forEach(function(c){
+    var o=document.createElement('option'); o.value=c.name; o.textContent=c.name;
+    if(c.name===s.club) o.selected=true; sel.appendChild(o);
+  });
+  ge('ms-day').value   = s.day||'שלישי';
+  ge('ms-time').value  = s.time||'18:00';
+  ge('ms-date').value  = s.date||'';
+  ge('ms-status').value= s.status||'pending';
+  ge('modalSched').classList.add('show');
+}
+ge('ms-save').addEventListener('click', function() {
+  var s = D.schedule.find(function(x){return x.house_id===editingSched.hid&&x.round===editingSched.round;}); if(!s) return;
+  s.club   = ge('ms-club').value;
+  s.day    = ge('ms-day').value;
+  s.time   = ge('ms-time').value;
+  s.date   = ge('ms-date').value;
+  s.status = ge('ms-status').value;
+  saveData(); ge('modalSched').classList.remove('show'); renderSeason();
+});
+ge('ms-cancel').addEventListener('click', function() { ge('modalSched').classList.remove('show'); });
+ge('seasDistFilter').addEventListener('change', renderSeason);
+ge('setAllDay').addEventListener('click', function() {
+  var day = prompt('הגדר יום לכל בתי המחזור הנוכחי ('+curRound+'):', 'שלישי');
+  if (!day) return;
+  D.schedule.forEach(function(s){if(s.round===curRound) s.day=day;});
+  saveData(); renderSeason();
+});
+
+/* ===== TAB 2: PAYMENTS ===== */
+var editingPay = null;
+
+function renderPayments() {
+  var dist = ge('payDistFilter').value;
+  var totalOwed=0, totalPaid=0;
+  var activeClubs = D.clubs.filter(function(c){
+    if (dist && c.district!==dist) return false;
+    return c.contract==='signed'||c.contract==='negotiating'||c.rate>0;
+  });
+
+  var tbody = ge('payBody'); tbody.innerHTML = '';
+  activeClubs.forEach(function(c) {
+    var hInClub = D.houses.filter(function(h){return h.club===c.name;}).length;
+    var hoursPerRound = hInClub * 3 * ((c.rate>0 ? 1 : 0));  // h/round
+    // actually hours = houses × 3 games × 1hr per game / courts
+    var gamesPerRound = hInClub * 3;
+    var slots = c.courts>0 ? Math.ceil(gamesPerRound/c.courts) : 0;
+    var hPerRound = slots;
+    var totalCost = hPerRound * (c.rate||0) * 5;
+    var paid = (D.payments||[]).filter(function(p){return p.club===c.name;}).reduce(function(a,p){return a+(p.amount||0);},0);
+    var balance = totalCost - paid;
+    totalOwed += totalCost; totalPaid += paid;
+
+    var distCls = DIST_CLASS[c.district]||'';
+    var statusBadge = balance<=0&&totalCost>0 ? '<span class="badge b-sign">שולם</span>' : (paid>0 ? '<span class="badge b-neg">חלקי</span>' : (totalCost>0?'<span class="badge b-pend">פתוח</span>':'—'));
+    var tr = document.createElement('tr');
+    tr.innerHTML = [
+      '<td><strong>'+c.name+'</strong></td>',
+      '<td><span class="badge dist-badge '+distCls+'">'+c.district+'</span></td>',
+      '<td>'+hPerRound+'</td>',
+      '<td>'+(c.rate?fmt(c.rate)+' ₪':'<span style="color:#DC2626">לא הוגדר</span>')+'</td>',
+      '<td>'+fmt(totalCost)+' ₪</td>',
+      '<td style="color:var(--ap)">'+fmt(paid)+' ₪</td>',
+      '<td style="color:'+(balance>0?'var(--re)':'var(--ap)')+'"><strong>'+fmt(balance)+' ₪</strong></td>',
+      '<td>'+statusBadge+'</td>',
+      '<td><button class="btn btn-sm" data-payclub="'+c.name+'">+ תשלום</button></td>'
+    ].join('');
+    tbody.appendChild(tr);
+  });
+
+  ge('payStats').innerHTML = [
+    '<div class="stat"><div class="lb">סה״כ לתשלום</div><div class="vl warn">'+fmt(totalOwed)+' ₪</div></div>',
+    '<div class="stat"><div class="lb">שולם</div><div class="vl ok">'+fmt(totalPaid)+' ₪</div></div>',
+    '<div class="stat"><div class="lb">יתרה</div><div class="vl bad">'+fmt(totalOwed-totalPaid)+' ₪</div></div>',
+    '<div class="stat"><div class="lb">מועדונים פעילים</div><div class="vl">'+activeClubs.length+'</div></div>'
+  ].join('');
+
+  tbody.querySelectorAll('[data-payclub]').forEach(function(btn) {
+    btn.addEventListener('click', function() { openPayModal(btn.getAttribute('data-payclub')); });
+  });
+}
+
+function openPayModal(name) {
+  editingPay = name;
+  ge('mp-name').value   = name;
+  ge('mp-amount').value = '';
+  ge('mp-date').value   = '';
+  ge('mp-notes').value  = '';
+  ge('modalPay').classList.add('show');
+}
+ge('mp-save').addEventListener('click', function() {
+  if (!D.payments) D.payments = [];
+  D.payments.push({club:editingPay, amount:parseFloat(ge('mp-amount').value)||0, date:ge('mp-date').value, method:ge('mp-method').value, notes:ge('mp-notes').value});
+  saveData(); ge('modalPay').classList.remove('show'); renderPayments();
+});
+ge('mp-cancel').addEventListener('click', function() { ge('modalPay').classList.remove('show'); });
+ge('payDistFilter').addEventListener('change', renderPayments);
+ge('exportPay').addEventListener('click', function() {
+  var rows = [['מועדון','מחוז','שולם','תאריך','אמצעי','הערות']];
+  (D.payments||[]).forEach(function(p){rows.push([p.club,'',p.amount,p.date,p.method,p.notes]);});
+  downloadCSV(rows,'ez7-payments.csv');
+});
+
+/* ===== TAB 3: COMMS ===== */
+var DEFAULT_TMPLS = [
+  'שלום,\n\nאנו שמחים לאשר את מחזור ה-[מחזור] של EZ7 Padel Tour במתחם שלכם.\n\nפרטי המחזור:\n• תאריך: [תאריך]\n• שעות: [שעה]-[שעה סיום]\n• מספר מגרשים נדרש: [מגרשים]\n• מספר משחקים: [משחקים]\n\nנא לאשר קבלת הודעה זו ולהכין את המגרשים בהתאם.\n\nבברכה,\nצוות EZ7 Padel Tour',
+  'שחקנים יקרים,\n\nלוז מחזור [מחזור] — EZ7 Padel Tour\n\n[רשימת בתים ומועדים]\n\nחשוב: יש להגיע 10 דקות לפני שעת המשחק.\nלשאלות: [טלפון צוות]\n\nבהצלחה לכולם!\nצוות EZ7',
+  'שלום,\n\nבהתייחס לסיכום עלויות מחזורי הליגה במתחמכם:\n\n• מספר שעות שהוסכמו: [שעות]\n• מחיר לשעה: [מחיר] ₪\n• סה״כ לתשלום: [סכום] ₪\n• שולם עד כה: [שולם] ₪\n• יתרה לתשלום: [יתרה] ₪\n\nאנו מבקשים להסדיר את התשלום עד [תאריך].\nפרטי העברה: [פרטי בנק]\n\nבברכה,\nצוות EZ7 Padel Tour',
+  'ברוך הבא ל-EZ7 Padel Tour! 🎾\n\nאנחנו שמחים שהצטרפת לליגה הפאדל המובילה בישראל.\n\nמה שמחכה לך:\n✅ 5 מחזורי ליגה\n✅ 5 משחקים בתחרות\n✅ תחרות עם שחקנים מאותה רמה מהאזור שלך\n✅ ניקוד ודירוג מקצועי\n\nמועד תחילת הליגה: [תאריך]\nמיקום: [מועדון]\n\nלמידע נוסף: [קישור / טלפון]\n\nבהצלחה!\nצוות EZ7 Padel Tour'
+];
+
+function renderComms() {
+  DEFAULT_TMPLS.forEach(function(t,i) {
+    var el = ge('tmpl'+i);
+    if (el && !el.value) el.value = t;
+  });
+  // fill club selects
+  ['tClub','tClubPay'].forEach(function(id) {
+    var el=ge(id); if(!el) return; el.innerHTML='';
+    D.clubs.forEach(function(c){el.add(new Option(c.name,c.name));});
+  });
+}
+
+ge('fillClubTmpl').addEventListener('click', function() {
+  var name  = ge('tClub').value;
+  var round = ge('tRound').value;
+  var c     = D.clubs.find(function(x){return x.name===name;})||{};
+  var sched = D.schedule.filter(function(s){return s.club===name&&s.round==round;});
+  var games = sched.length * 3;
+  var courts= c.courts||0;
+  var date  = sched.length ? (sched[0].date||sched[0].day+' '+sched[0].time) : '[תאריך]';
+  ge('tmpl0').value = DEFAULT_TMPLS[0]
+    .replace('[מחזור]', round).replace('[תאריך]', date)
+    .replace('[שעה]', sched.length?sched[0].time:'18:00')
+    .replace('[שעה סיום]', sched.length?addHour(sched[0].time,games,courts):'20:00')
+    .replace('[מגרשים]', courts).replace('[משחקים]', games);
+});
+
+ge('fillPlayerTmpl').addEventListener('click', function() {
+  var dist  = ge('tDistP').value;
+  var round = ge('tRoundP').value;
+  var items = D.schedule.filter(function(s){
+    if (s.round!=round) return false;
+    if (dist) { var h=D.houses.find(function(x){return x.id===s.house_id;}); return h&&h.district===dist; }
+    return true;
+  });
+  var lines = items.map(function(s,i){
+    return 'בית '+(i+1)+': '+s.club+' — '+s.day+' '+s.time+(s.date?' ('+s.date+')':'');
+  }).join('\n');
+  ge('tmpl1').value = DEFAULT_TMPLS[1].replace('[מחזור]',round).replace('[רשימת בתים ומועדים]',lines);
+});
+
+ge('fillPayTmpl').addEventListener('click', function() {
+  var name = ge('tClubPay').value;
+  var c    = D.clubs.find(function(x){return x.name===name;})||{};
+  var paid = (D.payments||[]).filter(function(p){return p.club===name;}).reduce(function(a,p){return a+(p.amount||0);},0);
+  var h    = D.houses.filter(function(x){return x.club===name;}).length;
+  var slots= c.courts>0?Math.ceil(h*3/c.courts):0;
+  var total= slots*(c.rate||0)*5;
+  ge('tmpl2').value = DEFAULT_TMPLS[2]
+    .replace('[שעות]', slots*5).replace('[מחיר]', c.rate||'—')
+    .replace('[סכום]', fmt(total)).replace('[שולם]', fmt(paid))
+    .replace('[יתרה]', fmt(total-paid));
+});
+
+document.querySelectorAll('[data-tmpl]').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var i = btn.getAttribute('data-tmpl');
+    var txt = ge('tmpl'+i).value;
+    navigator.clipboard.writeText(txt).then(function() {
+      var cd = ge('cd'+i); cd.style.display='inline'; setTimeout(function(){cd.style.display='none';},2000);
+    });
+  });
+});
+
+/* ===== UTIL ===== */
+function addHour(time, games, courts) {
+  try {
+    var p=time.split(':'); var h=parseInt(p[0]); var m=parseInt(p[1]);
+    var slots = courts>0 ? Math.ceil(games/courts) : games;
+    h += slots;
+    return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  } catch(e) { return ''; }
+}
+
+function downloadCSV(rows, filename) {
+  var bom = '\uFEFF';
+  var csv = bom + rows.map(function(r){return r.map(function(c){return '"'+(c||'').toString().replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var a = document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=filename; a.click();
+}
+
+/* ===== INIT ===== */
+fillDistFilters();
+renderClubs();
+</script>
+</body>
+</html>
